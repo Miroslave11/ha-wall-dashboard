@@ -233,8 +233,9 @@ Stránky Vysavač, Zahrádka a Žaluzie jsou zatím `PlaceholderPage`.
 cachované napořád (hash v názvu); `/photos/` s JSON výpisem; `/immich/` proxy jen pro vybrané GET/POST cesty.
 
 Soubory na NASu (`deploy/synology/docker-compose.yml`) se připojují jako volume: `config.local.json` do kořene
-webu, složka fotek na `/photos`. Proměnné z `.env`: `DASHBOARD_PORT`, `DASHBOARD_TAG`, `PHOTOS_DIR`,
-`IMMICH_URL`, `IMMICH_API_KEY`. Kořenový `docker-compose.yml` sestavuje image ze zdrojáků (bez aktualizací).
+webu, složka fotek `PHOTOS_DIR` na `/photos`. Bez `PHOTOS_DIR` se na `/photos` připojí pojmenovaný svazek
+`photos` (Synology Docker chybějící složku pro bind mount sám nevytvoří a kontejner by nenastartoval).
+Proměnné z `.env`: `DASHBOARD_PORT`, `DASHBOARD_TAG`, `PHOTOS_DIR`, `IMMICH_URL`, `IMMICH_API_KEY`. Kořenový `docker-compose.yml` sestavuje image ze zdrojáků (bez aktualizací).
 
 ## Vydání a automatická aktualizace
 

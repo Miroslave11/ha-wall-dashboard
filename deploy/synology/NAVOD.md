@@ -24,7 +24,6 @@ Tablet: každých 10 min čte /version.txt ──► nová verze ──► obnov
 | `docker-compose.yml` | tato složka | definice kontejneru, **neupravuje se** |
 | `aktualizace.sh` | tato složka | skript automatické aktualizace |
 | `.env` | `cp .env.example .env` | port, Immich (adresa a API klíč), případně cesta ke složce s fotkami |
-| `photos/` | tato složka | prázdná složka (fotky ze složky na NASu se připojují jinak, viz `.env`) |
 | `config.local.json` | `config.example.json` z kořene repozitáře | adresa HA, entity, půdorys, fotorámeček ([popis klíčů](../../docs/KONFIGURACE.md)) |
 
 `.env` a `config.local.json` jsou tvoje soukromé soubory. Nepatří do gitu ani do vydání na GitHubu.
@@ -32,11 +31,11 @@ Tablet: každých 10 min čte /version.txt ──► nová verze ──► obnov
 ## 1. Složka na NASu
 
 1. File Station → `docker` → nová složka `ha-wall-dashboard` (tedy `/volume1/docker/ha-wall-dashboard`).
-2. Nahraj do ní soubory a složku `photos` z tabulky výše.
+2. Nahraj do ní 4 soubory z tabulky výše.
 3. V `.env` vyplň Immich (`IMMICH_URL`, `IMMICH_API_KEY`). Album se vybírá v `config.local.json`
    (`"source": { "type": "immich", "albumName": "…" }`).
    Jen když fotky berete ze složky na NASu (`"type": "autoindex"`), odkomentuj `PHOTOS_DIR` s cestou
-   k **existující** složce.
+   k **existující** složce. Synology Docker chybějící složku sám nevytvoří.
 
 > Soubory upravuj v editoru, který zachová konce řádků LF (VS Code, Notepad++, Textový editor v DSM).
 > Klasický Poznámkový blok ve Windows může skript `aktualizace.sh` rozbít.
@@ -92,7 +91,7 @@ Seznam verzí: stránka *Releases* repozitáře na GitHubu.
 
 | problém | řešení |
 |---|---|
-| `Bind mount failed: '/volume1/…' does not exist` | `PHOTOS_DIR` v `.env` ukazuje na složku, která neexistuje. Při fotkách z Immiche řádek zakomentuj (`# PHOTOS_DIR=…`), jinak složku vytvoř. Pak projekt znovu spusť. |
+| `Bind mount failed: '/volume1/…' does not exist` | `PHOTOS_DIR` v `.env` ukazuje na složku, která neexistuje. Při fotkách z Immiche řádek zakomentuj (`# PHOTOS_DIR=…`), jinak složku vytvoř. Hláška s `…/ha-wall-dashboard/photos` = starý `docker-compose.yml`, nahraj nový z vydání. Pak projekt znovu spusť (**Sestavit**). |
 | `config.local.json` je na NASu složka | Kontejner se spustil dřív, než soubor existoval. Zastav projekt, smaž složku, nahraj soubor, spusť. |
 | Stažení image hlásí `denied` / `unauthorized` | Balíček na GitHubu není veřejný: GitHub → Packages → ha-wall-dashboard → Package settings → Change visibility → Public. |
 | Tablet ukazuje starou verzi | Počkej 10 minut, nebo obnov stránku ve Fully (*Reload*). Kontrola: `/version.txt`. |

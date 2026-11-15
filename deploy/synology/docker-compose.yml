@@ -18,5 +18,9 @@ services:
     volumes:
       # skutečná konfigurace (entity, URL Home Assistantu)
       - ./config.local.json:/usr/share/nginx/html/config.local.json:ro
-      # složka s fotkami pro fotorámeček (photoFrame.source.type = "autoindex") – cesta v .env
-      - ${PHOTOS_DIR:-./photos}:/photos:ro
+      # fotky pro fotorámeček ze složky na NASu (photoFrame.source.type = "autoindex") – cesta v .env.
+      # Bez PHOTOS_DIR (fotky z Immiche) se použije interní svazek Dockeru, žádná složka není potřeba.
+      - ${PHOTOS_DIR:-photos}:/photos:ro
+
+volumes:
+  photos:
