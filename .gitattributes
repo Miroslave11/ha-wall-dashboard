@@ -1,0 +1,2 @@
+# skripty pro NAS (Linux) musí mít konce řádků LF
+*.sh text eol=lf

@@ -1,0 +1,21 @@
+# Sestavení ze zdrojáků (bez automatické aktualizace). Doporučené nasazení na Synology
+# s hotovým image a automatickou aktualizací je v deploy/synology (NAVOD.md).
+# PŘED PRVNÍM SPUŠTĚNÍM: cp config.example.json config.local.json a upravit ho,
+# jinak Docker místo souboru vytvoří prázdnou složku.
+services:
+  ha-wall-dashboard:
+    build: .
+    container_name: ha-wall-dashboard
+    restart: unless-stopped
+    ports:
+      - "8099:80"
+    environment:
+      # Immich (photoFrame.source.type = "immich"): adresa BEZ lomítka na konci a API klíč.
+      # Zadej je v souboru .env vedle tohoto souboru (viz .env.example), ne sem.
+      IMMICH_URL: ${IMMICH_URL:-http://127.0.0.1:1}
+      IMMICH_API_KEY: ${IMMICH_API_KEY:-}
+    volumes:
+      # skutečná konfigurace (entity, URL Home Assistantu)
+      - ./config.local.json:/usr/share/nginx/html/config.local.json:ro
+      # složka s fotkami pro fotorámeček – cesta v .env (PHOTOS_DIR)
+      - ${PHOTOS_DIR:-./public/photos}:/photos:ro

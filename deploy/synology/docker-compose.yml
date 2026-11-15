@@ -1,0 +1,22 @@
+# HA Wall Dashboard na Synology NAS – hotový image z GitHubu (nic se nesestavuje na NASu).
+# Návod: NAVOD.md v této složce. Vše, co se liší dům od domu, je v .env a config.local.json,
+# tento soubor se nemusí upravovat.
+#
+# PŘED PRVNÍM SPUŠTĚNÍM musí vedle tohoto souboru existovat config.local.json,
+# jinak Docker místo souboru vytvoří prázdnou složku.
+services:
+  ha-wall-dashboard:
+    image: ghcr.io/miroslave11/ha-wall-dashboard:${DASHBOARD_TAG:-latest}
+    container_name: ha-wall-dashboard
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_PORT:-8099}:80"
+    environment:
+      # Immich (photoFrame.source.type = "immich"): adresa BEZ lomítka na konci a API klíč – v .env
+      IMMICH_URL: ${IMMICH_URL:-http://127.0.0.1:1}
+      IMMICH_API_KEY: ${IMMICH_API_KEY:-}
+    volumes:
+      # skutečná konfigurace (entity, URL Home Assistantu)
+      - ./config.local.json:/usr/share/nginx/html/config.local.json:ro
+      # složka s fotkami pro fotorámeček (photoFrame.source.type = "autoindex") – cesta v .env
+      - ${PHOTOS_DIR:-./photos}:/photos:ro

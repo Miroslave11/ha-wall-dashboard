@@ -1,0 +1,106 @@
+{
+  "_comment": "Demo konfigurace. Pro skutečný HA zkopírujte do config.local.json, vyplňte hass.url, nastavte demo na false a přepište entity. Popis všech klíčů: docs/KONFIGURACE.md",
+  "hass": {
+    "url": "",
+    "auth": "oauth"
+  },
+  "demo": true,
+  "stage": { "width": 1280, "height": 800 },
+  "theme": { "accent": "#5EE0FF", "light": "#FFB45C" },
+  "header": {
+    "sun": "sun.sun",
+    "blindsBattery": "sensor.zaluzie_baterie",
+    "presence": "zone.home",
+    "alerts": [
+      "binary_sensor.okno_pokoj",
+      "binary_sensor.okno_kuchyn",
+      "binary_sensor.okno_koupelna",
+      "binary_sensor.dvere_koupelna",
+      "binary_sensor.vchodove_dvere"
+    ]
+  },
+  "floorplan": {
+    "title": "Domov",
+    "width": 640,
+    "height": 460,
+    "furniture": true,
+    "rooms": [
+      { "id": "loznice", "name": "Ložnice", "area": "loznice", "x": 0, "y": 0, "w": 300, "h": 300,
+        "lights": ["light.loznice_svetlo_1", "light.loznice_svetlo_2", "light.loznice_led"],
+        "temperature": "sensor.loznice_teplota", "humidity": "sensor.loznice_vlhkost",
+        "fixtures": [
+          { "entity": "light.loznice_svetlo_1", "name": "Světlo u komody", "x": 130, "y": 112 },
+          { "entity": "light.loznice_svetlo_2", "name": "Světlo u okna", "x": 130, "y": 222 },
+          { "entity": "light.loznice_led", "type": "strip", "name": "LED pásek nad postelí", "x": 194, "y": 4, "length": 82 }
+        ] },
+      { "id": "obyvak", "name": "Obývák & kuchyň", "x": 300, "y": 0, "w": 340, "h": 300, "lights": ["light.obyvak", "light.kuchyn"],
+        "temperature": "sensor.obyvak_teplota", "humidity": "sensor.obyvak_vlhkost",
+        "fixtures": [
+          { "entity": "light.obyvak", "name": "Světlo v obýváku", "x": 375, "y": 185 },
+          { "entity": "light.kuchyn", "name": "Světlo v kuchyni", "x": 570, "y": 252 }
+        ] },
+      { "id": "pokoj", "name": "Pracovna", "x": 0, "y": 300, "w": 210, "h": 160, "lights": ["light.pokoj"], "temperature": "sensor.pokoj_teplota", "humidity": "sensor.pokoj_vlhkost", "glow": "45% 40%",
+        "fixtures": [{ "entity": "light.pokoj", "name": "Světlo v pracovně", "x": 105, "y": 380 }] },
+      { "id": "wc", "name": "Šatna", "x": 210, "y": 300, "w": 90, "h": 160, "lights": ["light.wc"], "motion": "binary_sensor.wc_pohyb" },
+      { "id": "chodba", "name": "Chodba", "x": 300, "y": 300, "w": 120, "h": 160, "lights": ["light.chodba"], "motion": "binary_sensor.chodba_pohyb" },
+      { "id": "koupelna", "name": "Koupelna", "x": 420, "y": 300, "w": 220, "h": 160,
+        "lights": ["light.koupelna_svetlo_1", "light.koupelna_svetlo_2"],
+        "motion": "binary_sensor.koupelna_pohyb",
+        "fixtures": [
+          { "entity": "light.koupelna_svetlo_1", "name": "Světlo vlevo", "x": 465, "y": 375 },
+          { "entity": "light.koupelna_svetlo_2", "name": "Světlo vpravo", "x": 579, "y": 375 }
+        ] }
+    ],
+    "projector": { "entity": "switch.zapni_kino", "name": "Domácí kino", "x": 398, "y": 68, "screen": { "x1": 637, "y1": 10, "x2": 637, "y2": 128 } },
+    "passages": [ { "x": 300, "y": 195, "length": 40 }, { "x": 210, "y": 342, "length": 40 }, { "x": 300, "y": 344, "length": 40 }, { "x": 420, "y": 392, "length": 40 }, { "x": 313, "y": 300, "length": 80, "horizontal": true } ]
+  },
+  "radar": { "lat": 50.0755, "lon": 14.4378, "zoom": 7, "name": "Praha" },
+  "heating": [
+    { "name": "Ložnice", "entity": "climate.topeni_ventil_loznice", "position": "sensor.topeni_ventil_loznice_position", "schedule": "text.topeni_ventil_loznice_workdays_schedule", "battery": "binary_sensor.topeni_ventil_loznice_battery_low", "window": "binary_sensor.topeni_ventil_loznice_window_open" },
+    { "name": "Pracovna", "entity": "climate.topeni_ventil_pracovna", "position": "sensor.topeni_ventil_pracovna_position", "schedule": "text.topeni_ventil_pracovna_workdays_schedule", "battery": "binary_sensor.topeni_ventil_pracovna_battery_low", "window": "binary_sensor.topeni_ventil_pracovna_window_open" }
+  ],
+  "scenes": [
+    { "name": "Ráno", "entity": "scene.rano", "lights": { "light.loznice_svetlo_1": 0.6, "light.loznice_svetlo_2": 0.6, "light.loznice_led": 0, "light.obyvak": 1, "light.kuchyn": 1, "light.chodba": 0.6, "light.koupelna_svetlo_1": 1, "light.koupelna_svetlo_2": 1, "light.pokoj": 0, "light.wc": 0 } },
+    { "name": "Večer", "entity": "scene.vecer", "lights": { "light.loznice_svetlo_1": 0, "light.loznice_svetlo_2": 0, "light.loznice_led": 0.6, "light.obyvak": 0.85, "light.kuchyn": 0.5, "light.chodba": 0.3, "light.koupelna_svetlo_1": 0, "light.koupelna_svetlo_2": 0, "light.pokoj": 0, "light.wc": 0 } },
+    { "name": "Film", "entity": "scene.film", "lights": { "light.obyvak": 0.25, "light.kuchyn": 0, "light.loznice_svetlo_1": 0, "light.loznice_svetlo_2": 0, "light.loznice_led": 0, "light.chodba": 0, "light.koupelna_svetlo_1": 0, "light.koupelna_svetlo_2": 0, "light.pokoj": 0, "light.wc": 0 } },
+    { "name": "Noc", "entity": "scene.noc", "lights": { "light.chodba": 0.15, "light.obyvak": 0, "light.kuchyn": 0, "light.loznice_svetlo_1": 0, "light.loznice_svetlo_2": 0, "light.loznice_led": 0, "light.koupelna_svetlo_1": 0, "light.koupelna_svetlo_2": 0, "light.pokoj": 0, "light.wc": 0 } }
+  ],
+  "weather": { "entity": "weather.forecast_home", "title": "Počasí" },
+  "temperatures": [
+    { "name": "Obývák", "entity": "sensor.obyvak_teplota", "color": "warm" },
+    { "name": "Venku", "entity": "sensor.venku_teplota", "color": "accent" }
+  ],
+  "historyHours": 24,
+  "vacuum": {
+    "entity": "vacuum.robot",
+    "name": "Robotický vysavač",
+    "area": "Obývák & kuchyň",
+    "showOnPlan": true,
+    "positionEntity": "sensor.robot_vacuum_position",
+    "roomsEntity": "sensor.robot_rooms",
+    "roomEntity": "sensor.robot_vacuum_room_id",
+    "roomMap": { "1": "obyvak", "2": "loznice", "3": "pokoj", "4": "wc", "5": "chodba", "6": "koupelna" }
+  },
+  "blinds": { "entity": "cover.zaluzie_obyvak", "name": "Žaluzie" },
+  "webcams": [
+    { "id": "demo-hory", "name": "Demo: hory", "group": "Demo", "type": "image", "url": "/photos/demo-hory.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
+    { "id": "demo-jezero", "name": "Demo: jezero", "group": "Demo", "type": "image", "url": "/photos/demo-jezero.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
+    { "id": "demo-more", "name": "Demo: moře", "group": "Demo", "type": "image", "url": "/photos/demo-more.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
+    { "id": "demo-les", "name": "Demo: les", "group": "Demo", "type": "image", "url": "/photos/demo-les.jpg", "refreshSec": 60, "source": "ukázkový snímek" }
+  ],
+  "photoFrame": {
+    "enabled": true,
+    "idleSeconds": 60,
+    "slideSeconds": 10,
+    "shuffle": false,
+    "portrait": "blur",
+    "landscape": "crop",
+    "kenBurns": "on",
+    "webcams": true,
+    "webcamEvery": 2,
+    "source": {
+      "type": "list",
+      "urls": ["/photos/demo-hory.jpg", "/photos/demo-portret-1.jpg", "/photos/demo-jezero.jpg", "/photos/demo-portret-2.jpg", "/photos/demo-les.jpg", "/photos/demo-more.jpg"]
+    }
+  }
+}
