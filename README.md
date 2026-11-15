@@ -5,13 +5,24 @@ Nástěnný dashboard pro Home Assistant ve skleněném (glassmorphism) stylu. J
 **Funkce**
 
 - Interaktivní půdorys. Světla se ovládají klepnutím na jednotlivá svítidla (klepnutí na samotnou místnost nic nedělá), dlouhý stisk na svítidlo, např. LED pásek, otevře jas a barvu. Místnost se rozzáří podle jasu.
-- Tlačítko „Vše zhasnout“. Scény jsou v configu a v Nastavení, na úvodní stránce se zatím nezobrazují.
+- Detail světel místnosti (dlouhý stisk na svítidlo): jas, barva, teplota bílé, efekty.
+- Stránky Topení (termohlavice s plánem), Radar (srážky) a Kamery (webkamery).
+- Scény jsou v configu a v Nastavení, na úvodní stránce se zatím nezobrazují.
 - Počasí s 5denní předpovědí, teploty s 24h grafem z historie HA.
 - Robotický vysavač (start / do doku) a žaluzie (nahoru / napůl / dolů).
 - Horní lišta: hodiny, východ/západ slunce, baterie žaluzií, upozornění (otevřená okna…), přítomnost.
 - **Fotorámeček**: po nastavené době nečinnosti se spustí prezentace fotek z NASu s hodinami a počasím. V noci může být černá obrazovka.
 - **Demo režim** se simulovanými entitami, takže vývoj jde i bez Home Assistantu.
 - Plocha 1280×800 se automaticky škáluje na libovolné rozlišení tabletu.
+
+## Dokumentace
+
+| návod | pro koho |
+|---|---|
+| [Návod k použití](docs/NAVOD-UZIVATEL.md) | uživatel tabletu: ovládání, stránky, Nastavení, řešení potíží |
+| [Nasazení na Synology](deploy/synology/NAVOD.md) | instalace na NAS a automatická aktualizace |
+| [Konfigurace](docs/KONFIGURACE.md) | všechny klíče `config.json` |
+| [Technický návod](docs/NAVOD-VYVOJAR.md) | programátor: architektura, tok dat, build, vydání |
 
 ---
 

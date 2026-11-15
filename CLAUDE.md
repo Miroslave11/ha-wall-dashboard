@@ -26,6 +26,13 @@ docker compose up -d --build   # nasazení (na NASu)
 
 **Před dokončením každé změny spusť `npm run typecheck && npm test && npm run build`.**
 
+**Dokumentace se udržuje s každou změnou (ve stejném commitu):**
+- `docs/NAVOD-UZIVATEL.md` – návod k použití pro uživatele: vše, co je vidět nebo se ovládá (stránky, gesta, Nastavení, potíže).
+- `docs/NAVOD-VYVOJAR.md` – technický popis: architektura, moduly (tabulka *Funkční moduly*), HA API, build, vydání, bezpečnost.
+- `docs/KONFIGURACE.md` – konfigurační klíče; `deploy/synology/NAVOD.md` – nasazení na NAS.
+- Při vydání nové verze přepsat číslo verze v hlavičce obou návodů.
+- Návody jsou veřejné: žádné osobní údaje (viz Nasazení).
+
 ## Stack
 
 - React 19 + TypeScript (strict) + Vite 8, Vitest
