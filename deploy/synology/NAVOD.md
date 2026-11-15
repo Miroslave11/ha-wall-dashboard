@@ -63,7 +63,7 @@ Přes SSH totéž: `cd /volume1/docker/ha-wall-dashboard && sudo docker compose 
 ## 4. Automatická aktualizace (Plánovač úloh)
 
 1. Ovládací panel → **Plánovač úloh** → Vytvořit → **Naplánovaná úloha** → **Uživatelem definovaný skript**.
-2. *Obecné*: název `HA Wall Dashboard – aktualizace`, uživatel **root**.
+2. *Obecné*: název `HA Wall Dashboard update` (DSM povoluje jen písmena bez diakritiky, čísla a mezery), uživatel **root**.
 3. *Plán*: denně, např. 4:00.
 4. *Nastavení úlohy* → Uživatelem definovaný skript:
    ```bash
