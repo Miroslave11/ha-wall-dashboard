@@ -17,7 +17,7 @@ import {
   type SlideHistory,
 } from "../utils/photoLayout";
 import { weatherIconColor, weatherInfo } from "../utils/weather";
-import { frameWebcams, webcamSnapshotUrls } from "../utils/webcams";
+import { frameWebcams, isNightAfterSunset, webcamSnapshotUrls } from "../utils/webcams";
 import { Icon } from "./Icon";
 
 /** Jedna fotka na slajdu: rozměry a (u rozostřeného pozadí) zmenšená kopie. */
@@ -93,6 +93,11 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
   webcamOn.current = !!pf.webcams;
   const webcamEvery = useRef(4);
   webcamEvery.current = Math.max(1, pf.webcamEvery ?? 4);
+  // V noci (západ slunce + 30 min) se podle nastavení vynechají evropské kamery
+  const skipEuropeRef = useRef(false);
+  skipEuropeRef.current = !!pf.webcamsSkipEuropeAtNight;
+  const sunRef = useRef(cfg.header.sun ? entities[cfg.header.sun] : undefined);
+  sunRef.current = cfg.header.sun ? entities[cfg.header.sun] : undefined;
   const sinceWebcam = useRef(0);
   const camIdx = useRef(0);
   /** Adresa snímku webkamery → její název (podle toho se pozná, že slajd není fotka). */
@@ -141,7 +146,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
 
   /** Další snímek webkamery, nebo null, když žádná neodpovídá (offline, malý zástupný obrázek). */
   const pickWebcam = useCallback(async (): Promise<string | null> => {
-    const cams = frameWebcams(webcamsRef.current);
+    const cams = frameWebcams(webcamsRef.current, { skipEurope: skipEuropeRef.current && isNightAfterSunset(sunRef.current, Date.now()) });
     for (let k = 0; k < cams.length; k++) {
       const cam = cams[camIdx.current++ % cams.length];
       for (const url of webcamSnapshotUrls(cam, Date.now())) {

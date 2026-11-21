@@ -71,9 +71,26 @@ export function webcamGroups(cams: WebcamConfig[]): string[] {
   return out;
 }
 
-/** Kamery vybrané pro fotorámeček: ty, které nejsou vypnuté (`inFrame: false`) a mají použitelný snímek. */
-export function frameWebcams(cams: WebcamConfig[] | undefined): WebcamConfig[] {
-  return (cams ?? []).filter((c) => c.inFrame !== false && webcamSnapshotUrls(c, 0).length > 0);
+/** Za jak dlouho po západu slunce se u nás doma považuje za noc (min). */
+export const NIGHT_AFTER_SUNSET_MIN = 30;
+
+/**
+ * Je u nás „noc“: slunce je pod obzorem a od západu uplynulo aspoň `NIGHT_AFTER_SUNSET_MIN` minut.
+ * Poslední západ se odvodí z `next_setting` − 24 h (rozdíl mezi dny jsou jednotky minut). Bez entity → false.
+ */
+export function isNightAfterSunset(sun: { state: string; attributes?: Record<string, unknown> } | undefined, nowMs: number): boolean {
+  if (!sun || sun.state !== "below_horizon") return false;
+  const next = Date.parse(String(sun.attributes?.next_setting ?? ""));
+  if (!Number.isFinite(next)) return true; // bez času západu věříme stavu slunce
+  return nowMs >= next - 24 * 3600_000 + NIGHT_AFTER_SUNSET_MIN * 60_000;
+}
+
+/**
+ * Kamery vybrané pro fotorámeček: ty, které nejsou vypnuté (`inFrame: false`) a mají použitelný snímek.
+ * S `skipEurope` (v noci) se vynechají kamery z Evropy (`region` jiný než "other").
+ */
+export function frameWebcams(cams: WebcamConfig[] | undefined, opts: { skipEurope?: boolean } = {}): WebcamConfig[] {
+  return (cams ?? []).filter((c) => c.inFrame !== false && !(opts.skipEurope && c.region !== "other") && webcamSnapshotUrls(c, 0).length > 0);
 }
 
 /** Je adresa snímku v pořádku? Absolutní http(s) nebo cesta v rámci dashboardu (začíná "/"). */

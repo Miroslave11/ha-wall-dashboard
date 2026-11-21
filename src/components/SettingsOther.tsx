@@ -11,6 +11,7 @@ const TEMP: EntityFilter = { domains: ["sensor"], deviceClasses: ["temperature"]
 const VACUUM: EntityFilter = { domains: ["vacuum"] };
 const COVER: EntityFilter = { domains: ["cover"] };
 const SENSOR: EntityFilter = { domains: ["sensor"] };
+const IMAGE: EntityFilter = { domains: ["image"] };
 const SCENE: EntityFilter = { domains: ["scene", "script"] };
 const SUN: EntityFilter = { domains: ["sun"] };
 const PRESENCE: EntityFilter = { domains: ["zone", "person", "group", "binary_sensor"], deviceClasses: ["presence", "occupancy"] };
@@ -156,7 +157,7 @@ export function SettingsOther({ draft, update, registry }: Props) {
   );
 }
 
-type VacuumSensorKey = "positionEntity" | "roomsEntity" | "roomEntity";
+type VacuumSensorKey = "positionEntity" | "roomsEntity" | "roomEntity" | "mapEntity";
 
 /**
  * Skutečná poloha vysavače v půdorysu: senzory z Xiaomi Cloud Map Extractoru v3 a spárování
@@ -196,6 +197,7 @@ function VacuumMapSettings({ draft, update, registry }: Props) {
       </div>
       <div className="form-row">
         <EntityField label="Aktuální místnost (…_vacuum_room_id, nepovinné)" filter={SENSOR} registry={registry} value={vac.roomEntity} onChange={(v) => setSensor("roomEntity", v)} />
+        <EntityField label="Obrázek mapy (image.…_live_map, nepovinné)" filter={IMAGE} registry={registry} value={vac.mapEntity} onChange={(v) => setSensor("mapEntity", v)} />
       </div>
       <button type="button" className="chip-add" onClick={findSensors}>
         <Icon name="vacuum" size={16} /> Najít senzory mapy

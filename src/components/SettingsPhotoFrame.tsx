@@ -148,6 +148,18 @@ export function SettingsPhotoFrame({ draft, update }: Props) {
               hint="Kamery se střídají postupně. Které kamery se použijí, nastavíte u každé v záložce Webkamery (Ve fotorámečku)."
               onChange={(v) => update((d) => void (d.photoFrame!.webcamEvery = v))}
             />
+            <label className="field field--check">
+              <input
+                type="checkbox"
+                checked={!!p.webcamsSkipEuropeAtNight}
+                onChange={(e) => update((d) => void (d.photoFrame!.webcamsSkipEuropeAtNight = e.target.checked))}
+              />
+              <span>Po západu slunce vynechat evropské kamery</span>
+            </label>
+            <span className="hint">
+              Začne 30 minut po západu slunce u vás (entita slunce v Nastavení → Ostatní entity) a trvá do východu. Kamery označené v záložce Webkamery jako „Mimo
+              Evropu“ se zobrazují dál.
+            </span>
             {(draft.webcams ?? []).length === 0 && <p className="hint">Zatím není přidaná žádná kamera (Nastavení → Webkamery).</p>}
           </>
         )}

@@ -93,6 +93,36 @@ function demoDock(boxes: Record<string, { x0: number; y0: number; x1: number; y1
   return b ? { x: Math.round(b.x0 + 0.1 * (b.x1 - b.x0)), y: Math.round((b.y0 + b.y1) / 2) } : { x: 25500, y: 25500 };
 }
 
+/**
+ * Obrázek mapy vysavače pro demo (jako image entita extractoru): SVG s místnostmi ve stejném měřítku jako skutečná mapa
+ * (200 px na 10 000 jednotek, osa y obrácená), s kalibračními body a obdélníky místností v atributech.
+ */
+function demoMapImage(boxes: Record<string, { x0: number; y0: number; x1: number; y1: number }>): Record<string, unknown> {
+  const list = Object.entries(boxes);
+  const S = 0.02;
+  const M = 400; // okraj v jednotkách vysavače
+  const x0 = Math.min(...list.map(([, b]) => b.x0)) - M;
+  const y0 = Math.min(...list.map(([, b]) => b.y0)) - M;
+  const W = Math.round((Math.max(...list.map(([, b]) => b.x1)) + M - x0) * S);
+  const H = Math.round((Math.max(...list.map(([, b]) => b.y1)) + M - y0) * S);
+  const px = (x: number) => Math.round((x - x0) * S);
+  const py = (y: number) => H - Math.round((y - y0) * S);
+  const colors = ["#3b4f7a", "#4a6a5f", "#6b4f6e", "#7a6a3b", "#3b6f7a", "#6e5a4f", "#52527a"];
+  const rects = list
+    .map(([n, b], i) => {
+      const x = px(b.x0) + 1, y = py(b.y1) + 1, w = px(b.x1) - px(b.x0) - 2, h = py(b.y0) - py(b.y1) - 2;
+      return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${colors[i % colors.length]}" stroke="#cfd8ff" stroke-opacity=".5" data-room="${n}"/>`;
+    })
+    .join("");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#0c1222"/>${rects}</svg>`;
+  const pt = (vx: number, vy: number) => ({ vacuum: { x: vx, y: vy }, map: { x: px(vx), y: py(vy) } });
+  return {
+    entity_picture: `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`,
+    calibration_points: [pt(x0, y0), pt(x0 + 10000, y0), pt(x0, y0 + 10000)],
+    rooms: Object.fromEntries(list.map(([n, b]) => [n, { ...b, number: Number(n) }])),
+  };
+}
+
 function asList(v: string | string[] | undefined): string[] {
   if (!v) return [];
   return Array.isArray(v) ? v : [v];
@@ -100,6 +130,7 @@ function asList(v: string | string[] | undefined): string[] {
 
 export class MockHassClient implements HassClient {
   readonly isDemo = true;
+  readonly hassUrl = "";
   private entities: HassEntities = {};
   private listeners = new Set<(e: HassEntities) => void>();
   private timers: number[] = [];
@@ -167,6 +198,8 @@ export class MockHassClient implements HassClient {
 
   /** Krok simulace úklidu (kolikátý bod trasy). */
   private vacStep = 0;
+  /** Čísla segmentů, které vysavač zrovna uklízí (app_segment_clean); null = celý byt. */
+  private vacSegments: string[] | null = null;
 
   /**
    * Senzory mapy vysavače jako z Xiaomi Cloud Map Extractoru v3. Mapa vysavače je vůči půdorysu
@@ -181,6 +214,7 @@ export class MockHassClient implements HassClient {
       const attrs = Object.fromEntries(nums.map((n) => [n, { ...boxes[n], number: Number(n) }]));
       this.entities[v.roomsEntity] = makeEntity(v.roomsEntity, String(nums.length), { ...attrs, unit_of_measurement: "rooms" });
     }
+    if (v.mapEntity) this.entities[v.mapEntity] = makeEntity(v.mapEntity, new Date().toISOString(), demoMapImage(boxes));
     const dock = demoDock(boxes);
     this.entities[v.positionEntity] = makeEntity(v.positionEntity, JSON.stringify({ ...dock, a: 0 }), { ...dock, a: 0 });
     if (v.roomEntity && nums[0]) this.entities[v.roomEntity] = makeEntity(v.roomEntity, nums[0]);
@@ -196,10 +230,11 @@ export class MockHassClient implements HassClient {
     const nums = Object.keys(boxes);
     let pos: { x: number; y: number } | null = null;
     let num: string | undefined;
-    if (state === "cleaning" && nums.length) {
+    if (state === "cleaning" && nums.length && (this.vacSegments?.some((n) => nums.includes(n)) ?? true)) {
       const STEPS = 8;
       const step = this.vacStep++;
-      num = nums[Math.floor(step / STEPS) % nums.length];
+      const route = this.vacSegments?.filter((n) => nums.includes(n)) ?? nums;
+      num = route[Math.floor(step / STEPS) % route.length];
       const b = boxes[num];
       const t = step % STEPS;
       const row = Math.floor(t / 2);
@@ -350,7 +385,18 @@ export class MockHassClient implements HassClient {
           this.set(id, String(data.value ?? ""));
           break;
         case "vacuum.start":
+          this.vacSegments = null;
+          this.vacStep = 0;
           this.set(id, "cleaning");
+          break;
+        case "vacuum.send_command":
+          if (data.command === "app_segment_clean" && Array.isArray(data.params)) {
+            this.vacSegments = data.params.map(String);
+            this.vacStep = 0;
+            this.set(id, "cleaning");
+          }
+          break;
+        case "vacuum.locate":
           break;
         case "vacuum.pause":
         case "vacuum.stop":

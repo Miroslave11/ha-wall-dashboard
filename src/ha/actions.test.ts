@@ -1,7 +1,7 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { describe, expect, it, vi } from "vitest";
 import type { RoomConfig } from "../config/types";
-import { activateScene, lightBrightness, roomBrightness, setLightColor, setLightEffect, setLightKelvin, setLightPercent, toggleLight } from "./actions";
+import { activateScene, lightBrightness, roomBrightness, setLightColor, setLightEffect, setLightKelvin, setLightPercent, toggleLight, vacuumCleanRooms } from "./actions";
 import type { HassClient } from "./types";
 
 const ent = (state: string, brightness?: number) =>
@@ -34,6 +34,14 @@ describe("activateScene", () => {
     await activateScene(client, { name: "Film", entity: "script.film" });
     expect(callService).toHaveBeenNthCalledWith(1, "scene", "turn_on", {}, { entity_id: "scene.vecer" });
     expect(callService).toHaveBeenNthCalledWith(2, "script", "turn_on", {}, { entity_id: "script.film" });
+  });
+});
+
+describe("vacuumCleanRooms", () => {
+  it("pošle app_segment_clean s čísly segmentů", async () => {
+    const callService = vi.fn().mockResolvedValue(null);
+    await vacuumCleanRooms({ callService } as unknown as HassClient, "vacuum.robot", [2, 6, 7]);
+    expect(callService).toHaveBeenCalledWith("vacuum", "send_command", { command: "app_segment_clean", params: [2, 6, 7] }, { entity_id: "vacuum.robot" });
   });
 });
 

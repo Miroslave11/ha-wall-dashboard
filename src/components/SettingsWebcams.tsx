@@ -114,7 +114,7 @@ export function SettingsWebcams({ draft, update }: Props) {
         <summary>Nápověda</summary>
         <p className="hint">
           „Snímek“ je adresa obrázku (JPEG), který se v zadaném odstupu obnovuje. „YouTube“ je živý přenos (ID videa nebo odkaz); v mřížce se ukáže jeho
-          náhled, po klepnutí video. „Zdroj“ se zobrazí na celé obrazovce. Kamery bez zaškrtnutí „Rám.“ se ve fotorámečku nepoužijí. Dbejte na podmínky
+          náhled, po klepnutí video. „Zdroj“ se zobrazí na celé obrazovce. Kamery bez zaškrtnutí „Rám.“ se ve fotorámečku nepoužijí. „Mimo EU“ označte kamery v jiném časovém pásmu: při zapnuté volbě Fotorámeček → „Po západu slunce vynechat evropské kamery“ se zobrazují i v noci, ostatní ne. Dbejte na podmínky
           provozovatele kamery.
         </p>
       </details>
@@ -132,6 +132,7 @@ export function SettingsWebcams({ draft, update }: Props) {
               <span>Obnova</span>
               <span>Zdroj</span>
               <span>Rám.</span>
+              <span title="Mimo Evropu: ve fotorámečku se nevynechá po západu slunce">Mimo EU</span>
               <span />
             </div>
 
@@ -218,6 +219,14 @@ export function SettingsWebcams({ draft, update }: Props) {
                           />
                           <label className="wc-check">
                             <input type="checkbox" aria-label="Ve fotorámečku" checked={c.inFrame !== false} onChange={(e) => edit(i, (x) => void (x.inFrame = e.target.checked))} />
+                          </label>
+                          <label className="wc-check">
+                            <input
+                              type="checkbox"
+                              aria-label="Mimo Evropu (ve fotorámečku se nevynechá po západu slunce)"
+                              checked={c.region === "other"}
+                              onChange={(e) => edit(i, (x) => void (x.region = e.target.checked ? "other" : undefined))}
+                            />
                           </label>
                           <div className="wc-actions">
                             <button type="button" className="icon-btn" aria-label="Posunout nahoru" disabled={!prevInGroup} onClick={() => move(i, -1)}>

@@ -27,6 +27,7 @@ export function extractUserSettings(cfg: DashboardConfig): UserSettings {
       shuffle: !!cfg.photoFrame.shuffle,
       webcams: !!cfg.photoFrame.webcams,
       webcamEvery: cfg.photoFrame.webcamEvery ?? 4,
+      webcamsSkipEuropeAtNight: !!cfg.photoFrame.webcamsSkipEuropeAtNight,
       portrait: cfg.photoFrame.portrait ?? "blur",
       landscape: cfg.photoFrame.landscape ?? "crop",
       kenBurns: cfg.photoFrame.kenBurns ?? "on",
@@ -42,7 +43,7 @@ function withFileGeometry(r: RoomConfig, cfg: DashboardConfig): RoomConfig {
 }
 
 /** Volby mapy vysavače (skutečná poloha), které starší uložené nastavení ještě neznalo. */
-const VACUUM_MAP_KEYS = ["positionEntity", "roomsEntity", "roomEntity", "roomMap"] as const;
+const VACUUM_MAP_KEYS = ["positionEntity", "roomsEntity", "roomEntity", "mapEntity", "roomMap"] as const;
 
 /**
  * Vysavač z nastavení. Když uložené nastavení (starší verze) žádnou volbu mapy nemá a jde o stejný

@@ -9,6 +9,8 @@ import {
   parseVacuumPosition,
   parseVacuumRooms,
   showsLivePosition,
+  parseVacuumImage,
+  roomPixelRect,
   suggestVacuumSensors,
   vacuumPlanPosition,
 } from "./vacuumMap";
@@ -159,6 +161,14 @@ describe("suggestVacuumSensors", () => {
       roomEntity: "sensor.robot_vacuum_room_id",
     });
   });
+  it("navrhne i obrázek mapy (image.<předpona>_live_map)", () => {
+    const entities = {
+      "sensor.robot_vacuum_position": ent("{}", { x: 1, y: 2 }),
+      "sensor.robot_rooms": ent("1", { "1": { x0: 0, y0: 0, x1: 1, y1: 1 } }),
+      "image.robot_live_map": ent("x"),
+    };
+    expect(suggestVacuumSensors(entities).mapEntity).toBe("image.robot_live_map");
+  });
   it("bez senzorů nic nenavrhne", () => {
     expect(suggestVacuumSensors({ "sensor.teplota": ent("21") })).toEqual({});
   });
@@ -170,5 +180,44 @@ describe("showsLivePosition", () => {
     expect(showsLivePosition("cleaning")).toBe(true);
     expect(showsLivePosition("returning")).toBe(true);
     expect(showsLivePosition(undefined)).toBe(false);
+  });
+});
+
+describe("parseVacuumImage / roomPixelRect", () => {
+  // skutečná kalibrace extractoru: 10 000 jednotek = 200 px, osa y obrácená
+  const image = (over: Record<string, unknown> = {}) =>
+    ({
+      state: "x",
+      attributes: {
+        entity_picture: "/api/image_proxy/image.r?token=abc",
+        calibration_points: [
+          { vacuum: { x: 25500, y: 25500 }, map: { x: 174, y: 219 } },
+          { vacuum: { x: 35500, y: 25500 }, map: { x: 374, y: 219 } },
+          { vacuum: { x: 25500, y: 35500 }, map: { x: 174, y: 19 } },
+        ],
+        rooms: { "2": { x0: 25550, y0: 22350, x1: 30200, y1: 27200, number: 2 } },
+        ...over,
+      },
+    }) as unknown as HassEntity;
+
+  it("přečte adresu, kalibraci a místnosti", () => {
+    const m = parseVacuumImage(image());
+    expect(m?.picture).toContain("image_proxy");
+    expect(Object.keys(m!.rooms)).toEqual(["2"]);
+    expect(applyAffine(m!.toPixels, { x: 35500, y: 35500 })).toEqual({ x: expect.closeTo(374), y: expect.closeTo(19) });
+  });
+  it("obdélník místnosti v pixelech (osa y se obrátí)", () => {
+    const m = parseVacuumImage(image())!;
+    const r = roomPixelRect(m.toPixels, m.rooms["2"]);
+    expect(r.x).toBeCloseTo(175);
+    expect(r.w).toBeCloseTo(93);
+    expect(r.y).toBeCloseTo(185);
+    expect(r.h).toBeCloseTo(97);
+  });
+  it("neúplná entita → null", () => {
+    expect(parseVacuumImage(undefined)).toBeNull();
+    expect(parseVacuumImage(image({ entity_picture: undefined }))).toBeNull();
+    expect(parseVacuumImage(image({ calibration_points: [] }))).toBeNull();
+    expect(parseVacuumImage(image({ rooms: {} }))).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { WebcamConfig } from "../config/types";
-import { cacheBust, frameWebcams, refreshSeconds, validateWebcams, webcamEmbedUrl, webcamGroups, webcamSnapshotUrls, youtubeId } from "./webcams";
+import { cacheBust, frameWebcams, isNightAfterSunset, refreshSeconds, validateWebcams, webcamEmbedUrl, webcamGroups, webcamSnapshotUrls, youtubeId } from "./webcams";
 
 const img = (over: Partial<WebcamConfig> = {}): WebcamConfig => ({ id: "a", name: "Sněžka", type: "image", url: "https://example.cz/cam.jpg", ...over });
 const yt = (over: Partial<WebcamConfig> = {}): WebcamConfig => ({ id: "b", name: "Etna", type: "youtube", url: "dQw4w9WgXcQ", ...over });
@@ -58,6 +58,29 @@ describe("webcamGroups / frameWebcams", () => {
     const list = [img(), img({ id: "x", inFrame: false }), yt({ id: "y", url: "špatné" }), yt({ id: "z" })];
     expect(frameWebcams(list).map((c) => c.id)).toEqual(["a", "z"]);
     expect(frameWebcams(undefined)).toEqual([]);
+  });
+});
+
+describe("frameWebcams v noci", () => {
+  it("s skipEurope vynechá evropské kamery, ponechá region other", () => {
+    const list = [img({ id: "eu" }), img({ id: "eu2", region: "europe" }), img({ id: "as", region: "other" })];
+    expect(frameWebcams(list, { skipEurope: true }).map((c) => c.id)).toEqual(["as"]);
+    expect(frameWebcams(list).map((c) => c.id)).toEqual(["eu", "eu2", "as"]);
+  });
+});
+
+describe("isNightAfterSunset", () => {
+  const H = 3600_000;
+  const now = Date.parse("2026-11-21T20:00:00Z");
+  // poslední západ ve 15:30Z (next_setting zítra v 15:30Z)
+  const sun = (state: string, next = "2026-11-22T15:30:00Z") => ({ state, attributes: { next_setting: next } });
+  it("přes den ne", () => expect(isNightAfterSunset(sun("above_horizon", "2026-11-21T21:00:00Z"), now)).toBe(false));
+  it("do 30 min po západu ještě ne", () => expect(isNightAfterSunset(sun("below_horizon"), Date.parse("2026-11-21T15:50:00Z"))).toBe(false));
+  it("30 min po západu ano", () => expect(isNightAfterSunset(sun("below_horizon"), Date.parse("2026-11-21T16:00:00Z"))).toBe(true));
+  it("v noci i krátce před východem", () => expect(isNightAfterSunset(sun("below_horizon"), now + 8 * H)).toBe(true));
+  it("bez entity ne, bez času západu věří stavu", () => {
+    expect(isNightAfterSunset(undefined, now)).toBe(false);
+    expect(isNightAfterSunset({ state: "below_horizon" }, now)).toBe(true);
   });
 });
 

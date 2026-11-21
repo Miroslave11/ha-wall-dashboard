@@ -4,7 +4,7 @@ Tento návod popisuje, jak dashboard ovládat na tabletu a jak ho nastavit. Inst
 [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md), technický popis pro programátory v
 [NAVOD-VYVOJAR.md](NAVOD-VYVOJAR.md).
 
-> Návod odpovídá verzi **1.0.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
+> Návod odpovídá verzi **1.1.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
 
 ## Obsah
 
@@ -54,8 +54,8 @@ Připojení ke skutečnému Home Assistantu:
 │      ├──────────────────────────────┬────────────────┤
 │ Domů │                              │ Počasí         │
 │ …    │   Půdorys                    │ Teploty        │
-│      │                              │ Vysavač,       │
-│ Nast.│                              │ žaluzie        │
+│      │                              │ Vysavač        │
+│ Nast.│                              │                │
 └──────┴──────────────────────────────┴────────────────┘
 ```
 
@@ -108,8 +108,11 @@ Panel zavřete křížkem nebo klepnutím mimo něj.
   srážky, vítr) nebo **po hodinách**. Hodinovou předpověď neumí každá služba počasí.
 - **Teploty** (např. Obývák a Venku): aktuální hodnota a křivka za posledních 24 hodin. Klepnutím se otevře
   graf s výběrem **6 h / 24 h / 7 dní** a s minimem, maximem a průměrem.
-- **Vysavač**: stav (Uklízí, V doku, …) a tlačítko **Uklidit** / **Do doku**.
-- **Žaluzie**: stav a tlačítka nahoru, napůl a dolů.
+- **Vysavač**: stav (Uklízí, V doku, …) a tlačítko **Uklidit** / **Do doku**. Klepnutím na název vysavače se otevře okno s
+  mapou a místnostmi: klepnutím na místnost na mapě vyberte jednu nebo víc a klepněte na **Uklidit vybrané**.
+  Mapa je skutečná mapa vysavače (s tečkou, kde právě je); bez ní se ukáže schematický půdorys. Dál tam jsou **Uklidit vše**, **Do doku**
+  (za běhu úklidu) a **Najít vysavač** (vysavač se ozve). Výběr místností funguje, jen když jsou místnosti vysavače
+  spárované s půdorysem (`vacuum.roomMap`) a vysavač má uloženou mapu rozdělenou na místnosti.
 
 ## Topení
 
@@ -180,12 +183,12 @@ Entity se vybírají ze seznamu s vyhledáváním. Entity z vybrané oblasti jso
 ### Ostatní entity
 
 Horní lišta (baterie žaluzií, upozornění, přítomnost), předpověď počasí, grafy teplot (na hlavní stránce
-jsou první dva), vysavač včetně polohy v půdorysu, žaluzie a scény.
+jsou první dva), vysavač včetně polohy v půdorysu a scény.
 
 ### Webkamery
 
 Seznam kamer: název, skupina, typ (**Snímek** = obrázek z adresy, **YouTube** = přenos), adresa, jak často se
-snímek obnovuje, zdroj (zobrazí se na celé obrazovce) a zda se kamera ukazuje ve fotorámečku. Kamery jde
+snímek obnovuje, zdroj (zobrazí se na celé obrazovce) a zda se kamera ukazuje ve fotorámečku a zda je **mimo Evropu** (jiné časové pásmo). Kamery jde
 přesouvat šipkami a hledat. Pozor: provozovatel kamery musí povolit zobrazení jejího snímku na cizí stránce,
 jinak se nenačte.
 
@@ -193,7 +196,7 @@ jinak se nenačte.
 
 Zapnutí po nečinnosti (sekundy), doba zobrazení fotky, náhodné pořadí, zobrazení fotek na výšku a na šířku
 (rozostřené pozadí, dvě vedle sebe, černé pozadí, ořez), pohyb fotek (vypnutý, jemný, plný), webkamery
-ve fotorámečku a noční režim.
+ve fotorámečku (volitelně bez evropských kamer po západu slunce, aby se nezobrazovala tma; kamery označené „Mimo EU“ zůstávají) a noční režim.
 
 ## Aktualizace
 

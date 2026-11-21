@@ -224,11 +224,54 @@ export function vacuumPlanPosition(
   };
 }
 
+/** Obdélník v pixelech obrázku mapy. */
+export interface PixelRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** Obrázek mapy vysavače (image entita extractoru): adresa, převod souřadnic vysavače na pixely a místnosti. */
+export interface VacuumMapImage {
+  /** `entity_picture`: adresa relativní k HA (s tokenem), nebo úplná / data URL */
+  picture: string;
+  /** souřadnice vysavače → pixely obrázku (z `calibration_points`) */
+  toPixels: Affine;
+  /** místnosti (číslo segmentu → obdélník v souřadnicích vysavače) */
+  rooms: Record<string, VacuumBox>;
+}
+
+/** Atributy image entity extractoru (`entity_picture`, `calibration_points`, `rooms`). Neúplná entita → null. */
+export function parseVacuumImage(e: HassEntity | undefined): VacuumMapImage | null {
+  const picture = e?.attributes?.entity_picture;
+  const cal = e?.attributes?.calibration_points;
+  if (typeof picture !== "string" || !picture || !Array.isArray(cal)) return null;
+  const pairs: { from: VacuumPoint; to: VacuumPoint }[] = [];
+  for (const c of cal) {
+    const o = (typeof c === "object" && c !== null ? c : {}) as { vacuum?: Record<string, unknown>; map?: Record<string, unknown> };
+    const vx = num(o.vacuum?.x), vy = num(o.vacuum?.y), mx = num(o.map?.x), my = num(o.map?.y);
+    if (vx !== null && vy !== null && mx !== null && my !== null) pairs.push({ from: { x: vx, y: vy }, to: { x: mx, y: my } });
+  }
+  const toPixels = fitAffine(pairs);
+  if (!toPixels) return null;
+  // místnosti jsou u image entity vnořené v atributu `rooms`
+  const rooms = parseVacuumRooms({ attributes: (e?.attributes?.rooms ?? {}) as Record<string, unknown> } as HassEntity);
+  return Object.keys(rooms).length > 0 ? { picture, toPixels, rooms } : null;
+}
+
+/** Obdélník místnosti v pixelech obrázku (po otočení / zrcadlení mapy vzniká opět obdélník). */
+export function roomPixelRect(t: Affine, box: VacuumBox): PixelRect {
+  const a = applyAffine(t, { x: box.x0, y: box.y0 });
+  const b = applyAffine(t, { x: box.x1, y: box.y1 });
+  return { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(b.x - a.x), h: Math.abs(b.y - a.y) };
+}
+
 /**
  * Najde senzory mapy vysavače z Xiaomi Cloud Map Extractoru v3 podle jejich entity_id
  * (`…_vacuum_position`, `…_rooms`, `…_vacuum_room_id`). Senzory se stejnou předponou mají přednost.
  */
-export function suggestVacuumSensors(entities: Record<string, HassEntity>): { positionEntity?: string; roomsEntity?: string; roomEntity?: string } {
+export function suggestVacuumSensors(entities: Record<string, HassEntity>): { positionEntity?: string; roomsEntity?: string; roomEntity?: string; mapEntity?: string } {
   const ids = Object.keys(entities).filter((id) => id.startsWith("sensor.")).sort();
   const positions = ids.filter((id) => id.endsWith("_vacuum_position"));
   for (const pos of positions) {
@@ -236,7 +279,8 @@ export function suggestVacuumSensors(entities: Record<string, HassEntity>): { po
     const rooms = `${prefix}_rooms`;
     const room = `${prefix}_vacuum_room_id`;
     if (entities[rooms] && Object.keys(parseVacuumRooms(entities[rooms])).length > 0) {
-      return { positionEntity: pos, roomsEntity: rooms, roomEntity: entities[room] ? room : undefined };
+      const map = `image.${prefix.slice("sensor.".length)}_live_map`;
+      return { positionEntity: pos, roomsEntity: rooms, roomEntity: entities[room] ? room : undefined, mapEntity: entities[map] ? map : undefined };
     }
   }
   return positions[0] ? { positionEntity: positions[0] } : {};

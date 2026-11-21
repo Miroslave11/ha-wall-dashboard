@@ -146,6 +146,7 @@ Polohu dávají senzory integrace **Xiaomi Cloud Map Extractor v3** (HACS / Mark
   "positionEntity": "sensor.robot_vacuum_position",
   "roomsEntity": "sensor.robot_rooms",
   "roomEntity": "sensor.robot_vacuum_room_id",
+  "mapEntity": "image.robot_live_map",
   "roomMap": { "1": "koupelna", "2": "obyvak", "3": "chodba", "4": "loznice", "5": "wc", "6": "pokoj", "7": "pokoj" }
 }
 ```
@@ -155,7 +156,8 @@ Polohu dávají senzory integrace **Xiaomi Cloud Map Extractor v3** (HACS / Mark
 | `positionEntity` | senzor polohy, atributy `x`, `y` v souřadnicích mapy vysavače |
 | `roomsEntity` | senzor místností vysavače, v atributech obdélníky `"1": { x0, y0, x1, y1 }` (povinný k `positionEntity`) |
 | `roomEntity` | nepovinný senzor s číslem místnosti, kde vysavač je; bez něj se místnost pozná z obdélníků |
-| `roomMap` | číslo místnosti vysavače → `id` místnosti v půdorysu; víc čísel smí vést do jedné místnosti |
+| `mapEntity` | nepovinný obrázek mapy vysavače (`image.…_live_map` z extractoru, má kalibraci a místnosti v atributech); okno vysavače na něm ukáže místnosti k vybrání, bez něj (nebo když se obrázek nenačte) se použije schematický půdorys |
+| `roomMap` | číslo místnosti vysavače → `id` místnosti v půdorysu; víc čísel smí vést do jedné místnosti; stejná čísla se posílají vysavači jako segmenty při úklidu vybraných místností (okno po klepnutí na vysavač, příkaz `app_segment_clean`) |
 
 Tečka se ukazuje mimo dok (úklid, návrat, pauza, chyba) a plynule se posouvá. Kreslí se vždy uvnitř místnosti, kde vysavač je, podle jeho relativní polohy v obdélníku té místnosti. Půdorys je schematický, takže přesný přepočet celé mapy by tečku posouval přes zdi. Otočení a zrcadlení mapy se pozná ze spárování samo, potřeba jsou aspoň 3 spárované místnosti (jinak se předpokládá mapa bez otočení). V aplikaci: Nastavení → Ostatní → Poloha vysavače v půdorysu (tlačítko *Najít senzory mapy* vyplní senzory podle jejich názvů).
 - Žaluzie: `cover.open_cover` / `cover.set_cover_position` 50 / `cover.close_cover`. Poloha se čte z `current_position`.
@@ -208,7 +210,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 
 - `type: "image"` – adresa snímku (JPEG), obnovuje se po `refreshSec` sekundách (výchozí 60, nejméně 10). K adrese se přidává parametr `_=<čas>`, aby prohlížeč nebral snímek z cache. Snímky se stahují přímo z tabletu (bez proxy), s hlavičkou `Referrer-Policy: no-referrer`; server kamery musí povolit zobrazení obrázku na cizí stránce.
 - `type: "youtube"` – živý přenos, `url` je ID videa (11 znaků) nebo odkaz (`watch?v=`, `youtu.be/`, `/live/`). V mřížce je náhled (`i.ytimg.com/vi/<id>/maxresdefault_live.jpg`, obnovuje se po dvou minutách), po klepnutí se spustí přehrávač (bez zvuku). Náhled živého přenosu není oficiálně zdokumentovaný; když chybí, dlaždice ukáže „Kamera je nedostupná“, ale přehrávač funguje.
-- `group` – skupina pro filtr nad mřížkou (Vše / Česko / …). `source` – kdo kameru provozuje, ukáže se na celé obrazovce. `inFrame: false` – kamera se nezařadí do fotorámečku.
+- `group` – skupina pro filtr nad mřížkou (Vše / Česko / …). `source` – kdo kameru provozuje, ukáže se na celé obrazovce. `inFrame: false` – kamera se nezařadí do fotorámečku. `region` – `"europe"` (výchozí) nebo `"other"` (kamera v jiném časovém pásmu, viz `webcamsSkipEuropeAtNight`).
 - Nic z toho se neukládá na NAS ani do HA mimo Nastavení → Webkamery (tam se kamery přidávají, řadí a odebírají a ukládají se jako ostatní nastavení). Při neúspěšném načtení zůstane poslední snímek s označením „nedostupná“.
 - Windy a podobné katalogy: snímky bezplatného Windy API mají odkazy s platností 10 minut a vyžadují odkaz na Windy, proto zatím nejsou podporované.
 
@@ -225,6 +227,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
   "kenBurns": "on",
   "webcams": false,
   "webcamEvery": 4,
+  "webcamsSkipEuropeAtNight": false,
   "source": { "type": "immich", "albumName": "Fotky pro wall panel" },
   "blackout": { "from": "23:30", "to": "06:00", "screenOff": false }
 }
@@ -233,7 +236,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 - `portrait` – fotky na výšku (poznají se z rozměrů načtené fotky, funguje pro Immich i složku): `"blur"` (výchozí) celá fotka na rozostřeném pozadí, `"pair"` dvě fotky na výšku vedle sebe, `"black"` celá fotka na černém pozadí, `"crop"` ořez na celou obrazovku (dřívější chování). U `"pair"` se k fotce na výšku hledá druhá mezi následujícími šesti fotkami (a přesune se hned za ni); když žádná není, použije se `"blur"`. Rozostřené pozadí je zmenšená ztmavená kopie fotky (levné i na slabém tabletu); u fotky z cizí domény bez CORS se použije CSS rozostření (v `?lowpower` jen černá).
 - `landscape` – fotky na šířku: `"crop"` (výchozí) vyplní obrazovku s malým ořezem, `"blur"` celé na rozostřeném pozadí, `"black"` celé na černém.
 - `kenBurns` – pohyb fotek: `"on"` (výchozí) přiblížení a posun, `"subtle"` jemný, `"off"` žádný. Fotky zobrazené celé se hýbou nejvýš nepatrně (zvětšení 2,5 %), ať se okraje neořezávají.
-- `webcams` – prokládat fotky záběry z webkamer (`webcams`, kromě těch s `inFrame: false`); `webcamEvery` – jedna kamera po tolika fotkách (výchozí 4), kamery se střídají dokola. Snímek kamery se nikdy neořezává (rozostřené pozadí) a má v rohu její název. Nedostupná kamera (do 8 s se nenačte) se přeskočí. Nastavuje se i v Nastavení → Fotorámeček.
+- `webcams` – prokládat fotky záběry z webkamer (`webcams`, kromě těch s `inFrame: false`); `webcamEvery` – jedna kamera po tolika fotkách (výchozí 4), kamery se střídají dokola. Snímek kamery se nikdy neořezává (rozostřené pozadí) a má v rohu její název. Nedostupná kamera (do 8 s se nenačte) se přeskočí. `webcamsSkipEuropeAtNight` – po západu slunce + 30 min (podle `header.sun`, do východu) se ve fotorámečku vynechají kamery z Evropy (`region` jiný než `"other"`), protože tam je tma; kamery s `region: "other"` zůstávají. Výchozí vypnuto, bez entity slunce se nic nevynechává. Nastavuje se i v Nastavení → Fotorámeček.
 - Všechny tři volby se nastavují i v Nastavení → Fotorámeček → Zobrazení fotek (přepíšou hodnoty ze souboru).
 - **Listování:** vlevo a vpravo jsou malé šipky pro předchozí a další fotku. Zpět se dá vrátit až o 40 zobrazených snímků (u dvojice se vrací celá dvojice). Po ručním listování se prezentace na 60 s zastaví, aby šlo fotku prohlédnout; pak pokračuje, od místa, kde se skončilo (po návratu zpět nejdřív znovu projde už zobrazené snímky).
 
@@ -249,7 +252,7 @@ V levém menu **Nastavení** má pět záložek:
 - **Připojení** – adresa Home Assistantu. Po zadání se ověří, že na ní HA odpovídá, a tablet se přesměruje na přihlášení (vždy OAuth, token se v aplikaci nezadává). Adresa se uloží v prohlížeči tabletu (localStorage) a má přednost před `hass.url` ze souboru. Tlačítko *Použít adresu ze souboru* ji zase smaže.
 - **Místnosti** – název, oblast v HA, světla, svítidla v půdorysu, teploměr, vlhkoměr, pohybové čidlo; přidání a smazání místnosti. Poloha v půdorysu je v části *Pokročilé*.
 - **Ostatní entity** – počasí, grafy teplot, vysavač, žaluzie, scény (i `script.*`) a horní lišta (slunce, přítomnost, baterie, upozornění).
-- **Webkamery** – seznam kamer pro stránku Kamery (název, skupina, snímek nebo YouTube, obnova, zdroj, zda je dát do fotorámečku), řazení a odebrání.
+- **Webkamery** – seznam kamer pro stránku Kamery (název, skupina, snímek nebo YouTube, obnova, zdroj, zda je dát do fotorámečku, zda jsou mimo Evropu), řazení a odebrání.
 - **Fotorámeček** – zapnutí, po jaké nečinnosti se spustí, doba zobrazení jedné fotky, náhodné pořadí a noční černá obrazovka (od–do, volitelně vypnutí displeje). Zdroj fotek (`photoFrame.source`) se mění jen v souboru.
 
 Entity se vybírají ze seznamu s hledáním (bez diakritiky – „prac“ najde „Pracovna“). Nahoře jsou entity z oblasti místnosti a se správným typem čidla. Skryté a konfigurační entity se ukážou jen při hledání.

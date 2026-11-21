@@ -79,6 +79,7 @@
     "positionEntity": "sensor.robot_vacuum_position",
     "roomsEntity": "sensor.robot_rooms",
     "roomEntity": "sensor.robot_vacuum_room_id",
+    "mapEntity": "image.robot_live_map",
     "roomMap": { "1": "obyvak", "2": "loznice", "3": "pokoj", "4": "wc", "5": "chodba", "6": "koupelna" }
   },
   "blinds": { "entity": "cover.zaluzie_obyvak", "name": "Žaluzie" },
@@ -98,6 +99,7 @@
     "kenBurns": "on",
     "webcams": true,
     "webcamEvery": 2,
+    "webcamsSkipEuropeAtNight": true,
     "source": {
       "type": "list",
       "urls": ["/photos/demo-hory.jpg", "/photos/demo-portret-1.jpg", "/photos/demo-jezero.jpg", "/photos/demo-portret-2.jpg", "/photos/demo-les.jpg", "/photos/demo-more.jpg"]

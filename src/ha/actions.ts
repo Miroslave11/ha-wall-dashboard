@@ -77,6 +77,18 @@ export function vacuumToggle(client: HassClient, entityId: string, state: string
   return client.callService("vacuum", busy ? "return_to_base" : "start", {}, { entity_id: entityId });
 }
 
+/**
+ * Úklid vybraných místností (segmentů mapy). Vysavač Xiaomi/Roborock (integrace xiaomi_miio) nemá `vacuum.clean_area`,
+ * proto příkaz `app_segment_clean`; vysavač musí mít uloženou mapu rozdělenou na místnosti.
+ */
+export function vacuumCleanRooms(client: HassClient, entityId: string, segments: number[]) {
+  return client.callService("vacuum", "send_command", { command: "app_segment_clean", params: segments }, { entity_id: entityId });
+}
+
+export function vacuumLocate(client: HassClient, entityId: string) {
+  return client.callService("vacuum", "locate", {}, { entity_id: entityId });
+}
+
 export function setCoverPosition(client: HassClient, entityId: string, position: number) {
   if (position >= 100) return client.callService("cover", "open_cover", {}, { entity_id: entityId });
   if (position <= 0) return client.callService("cover", "close_cover", {}, { entity_id: entityId });

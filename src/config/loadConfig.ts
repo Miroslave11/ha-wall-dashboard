@@ -22,6 +22,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
     kenBurns: "on",
     webcams: false,
     webcamEvery: 4,
+    webcamsSkipEuropeAtNight: false,
     source: { type: "list", urls: [] },
   },
 };

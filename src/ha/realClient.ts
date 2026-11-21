@@ -68,6 +68,9 @@ async function authenticate(cfg: HassConnectionConfig): Promise<Auth> {
 
 class RealHassClient implements HassClient {
   readonly isDemo = false;
+  get hassUrl(): string {
+    return this.auth.data.hassUrl.replace(/\/+$/, "");
+  }
   private statusListeners = new Set<(s: ConnectionStatus) => void>();
   private conn: Connection;
   private auth: Auth;

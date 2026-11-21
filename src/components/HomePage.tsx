@@ -5,6 +5,7 @@ import { DevicesCard } from "./DevicesCard";
 import { FloorplanCard } from "./FloorplanCard";
 import { HistoryModal, type HistorySpec } from "./HistoryModal";
 import { LightDetailModal, type LightDetailSpec } from "./LightDetailModal";
+import { VacuumRoomsModal } from "./VacuumRoomsModal";
 import { TempCard } from "./TempCard";
 import { WeatherCard } from "./WeatherCard";
 import { WeatherDetailModal } from "./WeatherDetailModal";
@@ -14,6 +15,7 @@ export function HomePage() {
   /** Otevřený graf historie (teplota / vlhkost) a detail předpovědi – oba překryjí hlavní plochu. */
   const [history, setHistory] = useState<HistorySpec | null>(null);
   const [weatherOpen, setWeatherOpen] = useState(false);
+  const [vacuumOpen, setVacuumOpen] = useState(false);
   const [lights, setLights] = useState<LightDetailSpec | null>(null);
   const sparks = useHistory(
     cfg.temperatures.map((t) => t.entity),
@@ -38,10 +40,11 @@ export function HomePage() {
             ))}
           </div>
         )}
-        <DevicesCard />
+        <DevicesCard onOpen={() => setVacuumOpen(true)} />
       </div>
       {history && <HistoryModal spec={history} onClose={() => setHistory(null)} />}
       {weatherOpen && <WeatherDetailModal onClose={() => setWeatherOpen(false)} />}
+      {vacuumOpen && <VacuumRoomsModal onClose={() => setVacuumOpen(false)} />}
       {lights && <LightDetailModal spec={lights} onClose={() => setLights(null)} />}
     </div>
   );

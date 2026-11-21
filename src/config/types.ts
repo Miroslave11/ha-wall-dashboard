@@ -143,6 +143,11 @@ export interface VacuumConfig {
   /** Nepovinný senzor s číslem místnosti, kde vysavač je (sensor.robot_vacuum_room_id). Jinak se pozná z obdélníků. */
   roomEntity?: string;
   /**
+   * Obrázek mapy vysavače (image.*, např. image.robot_live_map z Xiaomi Cloud Map Extractoru v3, má kalibraci a místnosti v atributech).
+   * Okno vysavače na něm ukáže místnosti k vybrání; bez něj se použije schematický půdorys.
+   */
+  mapEntity?: string;
+  /**
    * Číslo místnosti vysavače → id místnosti v půdorysu, např. { "2": "obyvak", "4": "loznice" }.
    * Víc čísel smí vést do jedné místnosti. Ze spárování (aspoň 3 místnosti) se pozná otočení mapy.
    */
@@ -215,6 +220,11 @@ export interface PhotoFrameConfig {
   webcams?: boolean;
   /** Jedna webkamera po kolika fotkách, výchozí 4. */
   webcamEvery?: number;
+  /**
+   * Po západu slunce (+ 30 min, podle `header.sun`) vynechat ve fotorámečku evropské kamery (`region` jiný než "other"),
+   * protože tam je tma. Kamery mimo Evropu zůstávají. Výchozí ne.
+   */
+  webcamsSkipEuropeAtNight?: boolean;
   source: PhotoSource;
   /**
    * Noční okno, kdy se místo fotek zobrazí černá obrazovka, např. { "from": "23:00", "to": "06:00" }.
@@ -242,6 +252,8 @@ export interface WebcamConfig {
   refreshSec?: number;
   /** Zařadit kameru mezi snímky fotorámečku (výchozí ano; platí, jen když je zapnuto `photoFrame.webcams`). */
   inFrame?: boolean;
+  /** Kde kamera je: "europe" (výchozí; podobný čas jako u nás) nebo "other" (jiné časové pásmo, ve fotorámečku se nevynechává v noci). */
+  region?: "europe" | "other";
   /** Odkud kamera je (provozovatel nebo web), zobrazí se na celé obrazovce. */
   source?: string;
 }
@@ -298,7 +310,7 @@ export interface DashboardConfig {
  * do localStorage. Při načtení přepíše odpovídající části config.json / config.local.json.
  */
 /** Vlastnosti fotorámečku upravitelné v aplikaci (zdroj fotek `source` zůstává v config.json). */
-export type PhotoFrameSettings = Pick<PhotoFrameConfig, "enabled" | "idleSeconds" | "slideSeconds" | "blackout" | "portrait" | "landscape" | "kenBurns" | "webcams" | "webcamEvery"> & {
+export type PhotoFrameSettings = Pick<PhotoFrameConfig, "enabled" | "idleSeconds" | "slideSeconds" | "blackout" | "portrait" | "landscape" | "kenBurns" | "webcams" | "webcamEvery" | "webcamsSkipEuropeAtNight"> & {
   shuffle: boolean;
 };
 

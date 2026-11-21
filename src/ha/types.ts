@@ -30,6 +30,8 @@ export type ForecastType = "daily" | "hourly";
  */
 export interface HassClient {
   readonly isDemo: boolean;
+  /** Adresa HA bez lomítka na konci (pro obrázky z HA, např. mapa vysavače); v demu prázdná. */
+  readonly hassUrl: string;
   subscribeEntities(cb: (entities: HassEntities) => void): () => void;
   onStatus(cb: (status: ConnectionStatus) => void): () => void;
   callService(domain: string, service: string, data?: object, target?: HassServiceTarget): Promise<unknown>;
