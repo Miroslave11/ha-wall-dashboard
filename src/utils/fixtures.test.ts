@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BULB_GLOW, fixtureGeometry, isStrip } from "./fixtures";
+import { BULB_GLOW, fixtureGeometry, isStrip, newFixture } from "./fixtures";
 
 describe("fixtureGeometry", () => {
   it("žárovka: střed je přímo x/y a záře je kruh", () => {
@@ -27,5 +27,19 @@ describe("fixtureGeometry", () => {
     expect(g.w).toBe(0);
     expect(isStrip({ entity: "light.led", type: "strip", x: 0, y: 0 })).toBe(true);
     expect(isStrip({ entity: "light.a", x: 0, y: 0 })).toBe(false);
+  });
+});
+
+describe("newFixture", () => {
+  const room = { id: "pokoj", name: "Pracovna", x: 0, y: 300, w: 210, h: 160, lights: [] };
+
+  it("žárovka vznikne uprostřed místnosti", () => {
+    expect(newFixture(room, false)).toEqual({ entity: "", name: "Světlo 1", x: 105, y: 380 });
+  });
+
+  it("LED pásek vznikne u horní stěny uprostřed a leží celý v místnosti", () => {
+    const f = newFixture({ ...room, fixtures: [{ entity: "light.a", type: "strip", x: 15, y: 456, length: 100 }] }, true);
+    expect(f).toEqual({ entity: "", type: "strip", name: "LED pásek 2", x: 55, y: 304, length: 100 });
+    expect(isStrip(f)).toBe(true);
   });
 });

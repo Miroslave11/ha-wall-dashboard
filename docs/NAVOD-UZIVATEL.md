@@ -4,7 +4,7 @@ Tento návod popisuje, jak dashboard ovládat na tabletu a jak ho nastavit. Inst
 [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md), technický popis pro programátory v
 [NAVOD-VYVOJAR.md](NAVOD-VYVOJAR.md).
 
-> Návod odpovídá verzi **1.1.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
+> Návod odpovídá verzi **1.2.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
 
 ## Obsah
 
@@ -146,8 +146,12 @@ a vpravo se přepíná na další. Snímky se samy obnovují. Když kamera nejde
   **Rámeček** v menu.
 - Ukazuje fotky z alba v Immichi nebo ze složky na NASu, k tomu hodiny, datum a počasí.
 - **Klepnutí** fotorámeček ukončí a vrátí vás na stránku Domů.
-- Šipky na okrajích listují fotkami **vpřed a zpět**. Po ručním listování se prezentace na minutu zastaví.
-- Může prokládat fotky záběry z webkamer.
+- Vysoké lišty se šipkami na levém a pravém okraji listují **vpřed a zpět** (stačí klepnout kamkoli na lištu).
+  Po ručním listování se prezentace na minutu zastaví.
+- Může prokládat fotky záběry z webkamer. Když jsou webkamery ve fotorámečku zapnuté, je nahoře uprostřed
+  přepínač **Fotky + kamery** / **Jen kamery**. Volba se uloží a platí, dokud ji nezměníte. Když v noci
+  vypadnou všechny kamery (jen evropské a je zapnuté jejich vynechání po západu slunce), ukazují se
+  i v režimu Jen kamery fotky a pod přepínačem je o tom poznámka.
 - **Noční režim**: v nastavené době (např. 23:30–6:00) je místo fotek černá obrazovka. S Fully Kiosk
   Browserem se displej může i úplně vypnout.
 - V Nastavení se fotorámeček sám nespouští, aby se neztratily rozpracované změny.
@@ -174,7 +178,7 @@ Vlevo seznam místností, vpravo podrobnosti vybrané místnosti:
 - **Název**, **Oblast v Home Assistantu**. Tlačítko **Doplnit z oblasti** samo najde světla a čidla z oblasti HA.
 - **Světla** (ikona žárovky přepne všechna), **Další světla** (jen se započítají do jasu místnosti).
 - **Teplota**, **Vlhkost**, **Pohybové čidlo**.
-- Svítidla v půdorysu, poloha názvu a teploty, skrytí názvu.
+- Svítidla a LED pásky v půdorysu (u pásku poloha, délka a jestli je svislý), poloha názvu a teploty, skrytí názvu.
 - **Poloha v půdorysu (pokročilé)**: souřadnice a velikost místnosti.
 - **Nová místnost**, **Smazat místnost**.
 
@@ -196,7 +200,7 @@ jinak se nenačte.
 
 Zapnutí po nečinnosti (sekundy), doba zobrazení fotky, náhodné pořadí, zobrazení fotek na výšku a na šířku
 (rozostřené pozadí, dvě vedle sebe, černé pozadí, ořez), pohyb fotek (vypnutý, jemný, plný), webkamery
-ve fotorámečku (volitelně bez evropských kamer po západu slunce, aby se nezobrazovala tma; kamery označené „Mimo EU“ zůstávají) a noční režim.
+ve fotorámečku (volitelně bez evropských kamer po západu slunce, aby se nezobrazovala tma; kamery označené „Mimo EU“ zůstávají), režim jen webkamery bez fotek (totéž jako přepínač na rámečku) a noční režim.
 
 ## Aktualizace
 

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useConfig, useEntity, useHass } from "../ha/HassContext";
 import { roomBrightness } from "../ha/actions";
+import { withWebcamsOnly } from "../config/userSettings";
 import { formatClock, formatDate, formatNumber, formatWeekday, isInTimeWindow, litText } from "../utils/format";
 import { blurDataUrl, loadPhoto, loadPhotoList, shuffle } from "../utils/photos";
 import {
@@ -70,7 +71,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
   const cfg = useConfig();
   const pf = cfg.photoFrame;
   const modes = photoModes(pf);
-  const { entities } = useHass();
+  const { entities, userSettings, saveUserSettings } = useHass();
   const weather = useEntity(cfg.weather?.entity);
   const indoor = useEntity(cfg.temperatures.find((t) => t.color !== "accent")?.entity);
 
@@ -98,6 +99,19 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
   skipEuropeRef.current = !!pf.webcamsSkipEuropeAtNight;
   const sunRef = useRef(cfg.header.sun ? entities[cfg.header.sun] : undefined);
   sunRef.current = cfg.header.sun ? entities[cfg.header.sun] : undefined;
+  // Režim „Jen kamery“: přepíná se tlačítky na rámečku hned (uložení do HA doběhne na pozadí)
+  const [camsOnlyChoice, setCamsOnlyChoice] = useState(!!pf.webcamsOnly);
+  useEffect(() => setCamsOnlyChoice(!!pf.webcamsOnly), [pf.webcamsOnly]);
+  const hasFrameCams = !!pf.webcams && frameWebcams(cfg.webcams).length > 0;
+  const camsOnly = hasFrameCams && camsOnlyChoice;
+  // V noci můžou být všechny kamery vynechané (jen evropské) – pak se i v režimu Jen kamery ukazují fotky
+  const nightSkipsAllCams =
+    camsOnly &&
+    !!pf.webcamsSkipEuropeAtNight &&
+    isNightAfterSunset(cfg.header.sun ? entities[cfg.header.sun] : undefined, now.getTime()) &&
+    frameWebcams(cfg.webcams, { skipEurope: true }).length === 0;
+  const camsOnlyRef = useRef(camsOnly);
+  camsOnlyRef.current = camsOnly;
   const sinceWebcam = useRef(0);
   const camIdx = useRef(0);
   /** Adresa snímku webkamery → její název (podle toho se pozná, že slajd není fotka). */
@@ -162,13 +176,18 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
 
   /** Vybere další snímek v pořadí; v režimu „pair“ k fotce na výšku dohledá další na výšku a přesune ji hned za ni. */
   const pickNext = useCallback(async (): Promise<string[]> => {
-    if (webcamOn.current && sinceWebcam.current >= webcamEvery.current) {
+    if (camsOnlyRef.current) {
+      // jen kamery; když žádná neodpoví, raději fotka než prázdná obrazovka
+      const cam = await pickWebcam();
+      if (cam) return [cam];
+    } else if (webcamOn.current && sinceWebcam.current >= webcamEvery.current) {
       sinceWebcam.current = 0; // i při neúspěchu se další pokus udělá až po dalších fotkách
       const cam = await pickWebcam();
       if (cam) return [cam];
     }
     sinceWebcam.current += 1;
     const list = photosRef.current;
+    if (list.length === 0) return [];
     const i = indexRef.current % list.length;
     const first = await loadPhoto(list[i]);
     indexRef.current = i + 1;
@@ -187,7 +206,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
 
   /** Další snímek: nejdřív se znovu ukážou snímky, od kterých se uživatel vrátil zpět, pak nový. */
   const advance = useCallback(async () => {
-    if (busy.current || photosRef.current.length === 0) return;
+    if (busy.current || (photosRef.current.length === 0 && !camsOnlyRef.current)) return;
     busy.current = true;
     try {
       const h = historyRef.current;
@@ -195,7 +214,8 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
         historyRef.current = { ...h, pos: h.pos + 1 };
         await showUrls(h.items[h.pos + 1], false);
       } else {
-        await showUrls(await pickNext(), true);
+        const next = await pickNext();
+        if (next.length) await showUrls(next, true);
       }
     } finally {
       busy.current = false;
@@ -221,9 +241,19 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
 
   const blackout = !!pf.blackout && isInTimeWindow(now, pf.blackout.from, pf.blackout.to);
 
-  // Prezentace běží jen když je rámeček aktivní a není noční okno
+  /** Přepnutí „Fotky + kamery“ / „Jen kamery“: projeví se hned (efekt níže ukáže nový snímek) a uloží se do nastavení. */
+  const chooseCamsOnly = (on: boolean) => {
+    if (on === camsOnly) return;
+    setCamsOnlyChoice(on);
+    sinceWebcam.current = 0;
+    void saveUserSettings(withWebcamsOnly(userSettings, cfg, on)).then((errs) => {
+      if (errs.length) console.warn("Režim fotorámečku se neuložil", errs);
+    });
+  };
+
+  // Prezentace běží jen když je rámeček aktivní a není noční okno; po změně režimu začne znovu novým snímkem
   useEffect(() => {
-    if (!active || blackout || photos.length === 0) return;
+    if (!active || blackout || (photos.length === 0 && !camsOnly)) return;
     holdUntil.current = 0;
     // po novém zapnutí se pokračuje od posledního zobrazeného snímku
     historyRef.current = { ...historyRef.current, pos: historyRef.current.items.length - 1 };
@@ -232,7 +262,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
       if (Date.now() >= holdUntil.current) void advance();
     }, Math.max(3, pf.slideSeconds) * 1000);
     return () => clearInterval(id);
-  }, [active, blackout, photos, pf.slideSeconds, advance]);
+  }, [active, blackout, photos, pf.slideSeconds, advance, camsOnly]);
 
   // Volitelně vypnout displej v noci (Fully Kiosk)
   useEffect(() => {
@@ -277,12 +307,12 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
             );
           })}
           <div className="pf-scrim" />
-          {photos.length > 1 && (
+          {(photos.length > 1 || camsOnly) && (
             <>
               <button
                 type="button"
                 className="pf-nav pf-nav--prev"
-                aria-label="Předchozí fotka"
+                aria-label="Předchozí snímek"
                 disabled={!nav.back}
                 tabIndex={active ? 0 : -1}
                 onPointerDown={stop}
@@ -291,12 +321,12 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
                   manual(goBack);
                 }}
               >
-                <Icon name="chevronLeft" size={22} strokeWidth={2} />
+                <Icon name="chevronLeft" size={30} strokeWidth={2} />
               </button>
               <button
                 type="button"
                 className="pf-nav pf-nav--next"
-                aria-label="Další fotka"
+                aria-label="Další snímek"
                 tabIndex={active ? 0 : -1}
                 onPointerDown={stop}
                 onClick={(e) => {
@@ -304,10 +334,31 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
                   manual(advance);
                 }}
               >
-                <Icon name="chevronRight" size={22} strokeWidth={2} />
+                <Icon name="chevronRight" size={30} strokeWidth={2} />
               </button>
             </>
           )}
+          {hasFrameCams && (
+            <div className="pf-mode" role="group" aria-label="Co fotorámeček ukazuje" onPointerDown={stop} onClick={stop}>
+              {[
+                { on: false, icon: "image" as const, label: "Fotky + kamery" },
+                { on: true, icon: "camera" as const, label: "Jen kamery" },
+              ].map((m) => (
+                <button
+                  key={m.label}
+                  type="button"
+                  className={`pf-mode-btn${camsOnly === m.on ? " pf-mode-btn--on" : ""}`}
+                  aria-pressed={camsOnly === m.on}
+                  tabIndex={active ? 0 : -1}
+                  onClick={() => chooseCamsOnly(m.on)}
+                >
+                  <Icon name={m.icon} size={18} strokeWidth={1.8} />
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          )}
+          {nightSkipsAllCams && <div className="pf-mode-note">Po západu slunce jsou evropské kamery vypnuté, zatím se ukazují fotky</div>}
           <div className="pf-clock">
             <b>{formatClock(now)}</b>
             <span>
@@ -332,7 +383,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
               {litText(lit)}
             </div>
           </div>
-          {photos.length > 1 && photos.length <= MAX_DOTS && (
+          {!camsOnly && photos.length > 1 && photos.length <= MAX_DOTS && (
             <div className="pf-dots">
               {photos.map((p, i) => (
                 <span key={p} className={i === index ? "on" : undefined} />

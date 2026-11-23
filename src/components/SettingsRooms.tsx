@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { LabelPos, RoomConfig, UserSettings } from "../config/types";
 import { useHass } from "../ha/HassContext";
 import { suggestRoomFromArea, uniqueRoomId, type EntityFilter } from "../utils/entityOptions";
+import { newFixture } from "../utils/fixtures";
 import { czPlural } from "../utils/format";
 import { LABEL_POSITIONS } from "../utils/labels";
 import type { HaRegistry } from "../utils/registry";
@@ -9,6 +10,14 @@ import { EntityField, EntityListField } from "./EntityPicker";
 import { Icon } from "./Icon";
 
 const LIGHT_DOMAINS = ["light", "switch"];
+
+/** Popisky číselných polí svítidla. */
+const FIXTURE_NUM_LABELS = { x: "Poloha X", y: "Poloha Y", length: "Délka" } as const;
+
+/** Přidá do místnosti nové svítidlo (žárovku, nebo LED pásek); entitu uživatel vybere. */
+function addFixture(r: RoomConfig, strip: boolean) {
+  r.fixtures = [...(r.fixtures ?? []), newFixture(r, strip)];
+}
 
 interface Props {
   draft: UserSettings;
@@ -207,7 +216,7 @@ function RoomEditor({
       </div>
 
       {fixtures.map((fx, i) => (
-        <div key={i} className="form-row form-row--item">
+        <div key={i} className={`form-row form-row--fixture${fx.type === "strip" ? " form-row--fixture-strip" : ""}`}>
           <EntityField
             label={`${fx.type === "strip" ? "LED pásek" : "Světlo"} v půdorysu: ${fx.name ?? i + 1}`}
             filter={f(LIGHT_DOMAINS)}
@@ -223,14 +232,14 @@ function RoomEditor({
               })
             }
           />
-          {(["x", "y"] as const).map((k) => (
+          {((fx.type === "strip" ? ["x", "y", "length"] : ["x", "y"]) as Array<"x" | "y" | "length">).map((k) => (
             <label key={k} className="field field--num">
-              <span className="field-label">{k === "x" ? "Poloha X" : "Poloha Y"}</span>
+              <span className="field-label">{FIXTURE_NUM_LABELS[k]}</span>
               <input
                 className="input"
                 type="number"
                 inputMode="numeric"
-                value={fx[k]}
+                value={fx[k] ?? ""}
                 onChange={(e) => {
                   const v = Number(e.target.value);
                   if (Number.isFinite(v)) onChange((r) => void (r.fixtures![i][k] = v));
@@ -238,6 +247,19 @@ function RoomEditor({
               />
             </label>
           ))}
+          {fx.type === "strip" && (
+            <label className="field field--check">
+              <input
+                type="checkbox"
+                checked={!!fx.vertical}
+                onChange={(e) => {
+                  const vertical = e.target.checked;
+                  onChange((r) => void (vertical ? (r.fixtures![i].vertical = true) : delete r.fixtures![i].vertical));
+                }}
+              />
+              <span>Svisle</span>
+            </label>
+          )}
           <button
             type="button"
             className="icon-btn icon-btn--field"
@@ -255,29 +277,18 @@ function RoomEditor({
           </button>
         </div>
       ))}
-      <button
-        type="button"
-        className="chip-add"
-        onClick={() =>
-          onChange((r) => {
-            r.fixtures = [
-              ...(r.fixtures ?? []),
-              // nové svítidlo vznikne uprostřed místnosti; polohu (v souřadnicích půdorysu) lze upravit
-              {
-                entity: "",
-                name: `Světlo ${(r.fixtures?.length ?? 0) + 1}`,
-                x: Math.round(r.x + r.w / 2),
-                y: Math.round(r.y + r.h / 2),
-              },
-            ];
-          })
-        }
-      >
-        <Icon name="plus" size={16} /> Přidat světlo do půdorysu
-      </button>
+      <div className="form-row">
+        <button type="button" className="chip-add" onClick={() => onChange((r) => addFixture(r, false))}>
+          <Icon name="plus" size={16} /> Přidat světlo do půdorysu
+        </button>
+        <button type="button" className="chip-add" onClick={() => onChange((r) => addFixture(r, true))}>
+          <Icon name="ledStrip" size={16} /> Přidat LED pásek
+        </button>
+      </div>
       {fixtures.length > 0 && (
         <span className="hint">
-          Polohu svítidla zadejte v souřadnicích půdorysu (stejných jako X/Y místnosti). Každé svítidlo září a přepíná se samostatně.
+          Polohu svítidla zadejte v souřadnicích půdorysu (stejných jako X/Y místnosti). Každé svítidlo září a přepíná se samostatně. U LED pásku je
+          poloha jeho levý (u svislého horní) konec; pásek na stěně má Y (u svislého X) přímo na vnitřní hraně stěny, tedy 4 od okraje místnosti.
         </span>
       )}
 

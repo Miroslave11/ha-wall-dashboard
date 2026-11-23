@@ -4,7 +4,7 @@ Jak aplikace funguje uvnitř, jak ji spustit, rozšířit a vydat. Ovládání z
 [NAVOD-UZIVATEL.md](NAVOD-UZIVATEL.md), všechny konfigurační klíče v [KONFIGURACE.md](KONFIGURACE.md),
 nasazení na NAS v [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md).
 
-> Návod odpovídá verzi **1.1.0**.
+> Návod odpovídá verzi **1.2.0**.
 
 ## Obsah
 
@@ -190,7 +190,7 @@ Demo je hlavní vývojový nástroj a ukázka pro nové uživatele.
 
 | modul | komponenty | logika | konfigurace |
 |---|---|---|---|
-| Půdorys | `FloorplanCard`, `RoomTile`, `FixtureControl`, `FloorplanFurniture`, `PassageLines`, `Projector`, `RoomClimate` | `utils/fixtures.ts`, `utils/passages.ts`, `utils/projector.ts`, `ha/actions.ts` | `floorplan` |
+| Půdorys | `FloorplanCard`, `RoomTile`, `FixtureControl`, `FloorplanFurniture`, `PassageLines`, `Projector`, `RoomClimate` | `utils/fixtures.ts` (geometrie, `newFixture` pro přidání v Nastavení), `utils/passages.ts`, `utils/projector.ts`, `ha/actions.ts` | `floorplan` |
 | Detail světel | `LightDetailModal`, `LightSlider` | `utils/lightColor.ts` (`lightCaps` z `supported_color_modes`), `setLight*` v `actions.ts` | `fixtures`, `lights` |
 | Vysavač v půdorysu | `VacuumDot` | `utils/vacuumMap.ts` (orientace ze spárovaných místností, poloha relativně v místnosti) | `vacuum` |
 | Horní lišta | `TopBar` | | `header` |
@@ -200,7 +200,7 @@ Demo je hlavní vývojový nástroj a ukázka pro nové uživatele.
 | Topení | `HeatingPage`, `HeaterCard`, `HeaterDial`, `HeaterScheduleModal` | `utils/heating.ts`, `setHeater*` | `heating` |
 | Radar | `RadarPage` (líně načtená) | `utils/radar.ts`, `hooks/useRadarFrames` (RainViewer) | `radar` |
 | Kamery | `CamerasPage`, `WebcamTile`, `WebcamViewer` | `utils/webcams.ts`, `hooks/useWebcamSnapshot` | `webcams` |
-| Fotorámeček | `PhotoFrame` | `utils/photos.ts` (list, autoindex, Immich), `utils/photoLayout.ts` (noc a filtr evropských kamer: `isNightAfterSunset`, `frameWebcams` v `utils/webcams.ts`) | `photoFrame` |
+| Fotorámeček | `PhotoFrame` | `utils/photos.ts` (list, autoindex, Immich), `utils/photoLayout.ts` (noc a filtr evropských kamer: `isNightAfterSunset`, `frameWebcams` v `utils/webcams.ts`); přepínač Fotky + kamery / Jen kamery ukládá `photoFrame.webcamsOnly` přes `withWebcamsOnly` (`config/userSettings.ts`) a `saveUserSettings` | `photoFrame` |
 | Nastavení | `SettingsPage`, `SettingsRooms`, `SettingsOther`, `SettingsWebcams`, `SettingsPhotoFrame`, `ConnectForm`, `EntityPicker` | `config/userSettings.ts`, `utils/entityOptions.ts`, `utils/registry.ts` | `UserSettings` |
 | Aktualizace | (`App.tsx`) | `utils/appVersion.ts`, `hooks/useAppUpdate` | — |
 

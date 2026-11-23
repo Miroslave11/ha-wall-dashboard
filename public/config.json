@@ -39,8 +39,11 @@
           { "entity": "light.obyvak", "name": "Světlo v obýváku", "x": 375, "y": 185 },
           { "entity": "light.kuchyn", "name": "Světlo v kuchyni", "x": 570, "y": 252 }
         ] },
-      { "id": "pokoj", "name": "Pracovna", "x": 0, "y": 300, "w": 210, "h": 160, "lights": ["light.pokoj"], "temperature": "sensor.pokoj_teplota", "humidity": "sensor.pokoj_vlhkost", "glow": "45% 40%",
-        "fixtures": [{ "entity": "light.pokoj", "name": "Světlo v pracovně", "x": 105, "y": 380 }] },
+      { "id": "pokoj", "name": "Pracovna", "x": 0, "y": 300, "w": 210, "h": 160, "lights": ["light.pokoj", "light.pokoj_led"], "temperature": "sensor.pokoj_teplota", "humidity": "sensor.pokoj_vlhkost", "glow": "45% 40%",
+        "fixtures": [
+          { "entity": "light.pokoj", "name": "Světlo v pracovně", "x": 105, "y": 380 },
+          { "entity": "light.pokoj_led", "type": "strip", "name": "LED pásek za postelí", "x": 15, "y": 456, "length": 100 }
+        ] },
       { "id": "wc", "name": "Šatna", "x": 210, "y": 300, "w": 90, "h": 160, "lights": ["light.wc"], "motion": "binary_sensor.wc_pohyb" },
       { "id": "chodba", "name": "Chodba", "x": 300, "y": 300, "w": 120, "h": 160, "lights": ["light.chodba"], "motion": "binary_sensor.chodba_pohyb" },
       { "id": "koupelna", "name": "Koupelna", "x": 420, "y": 300, "w": 220, "h": 160,
@@ -100,6 +103,7 @@
     "webcams": true,
     "webcamEvery": 2,
     "webcamsSkipEuropeAtNight": true,
+    "webcamsOnly": false,
     "source": {
       "type": "list",
       "urls": ["/photos/demo-hory.jpg", "/photos/demo-portret-1.jpg", "/photos/demo-jezero.jpg", "/photos/demo-portret-2.jpg", "/photos/demo-les.jpg", "/photos/demo-more.jpg"]

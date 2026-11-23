@@ -225,6 +225,11 @@ export interface PhotoFrameConfig {
    * protože tam je tma. Kamery mimo Evropu zůstávají. Výchozí ne.
    */
   webcamsSkipEuropeAtNight?: boolean;
+  /**
+   * Ukazovat jen webkamery, bez fotek (platí, jen když je zapnuto `webcams`). Přepíná se i přímo na fotorámečku
+   * („Fotky + kamery“ / „Jen kamery“). Výchozí ne.
+   */
+  webcamsOnly?: boolean;
   source: PhotoSource;
   /**
    * Noční okno, kdy se místo fotek zobrazí černá obrazovka, např. { "from": "23:00", "to": "06:00" }.
@@ -310,7 +315,7 @@ export interface DashboardConfig {
  * do localStorage. Při načtení přepíše odpovídající části config.json / config.local.json.
  */
 /** Vlastnosti fotorámečku upravitelné v aplikaci (zdroj fotek `source` zůstává v config.json). */
-export type PhotoFrameSettings = Pick<PhotoFrameConfig, "enabled" | "idleSeconds" | "slideSeconds" | "blackout" | "portrait" | "landscape" | "kenBurns" | "webcams" | "webcamEvery" | "webcamsSkipEuropeAtNight"> & {
+export type PhotoFrameSettings = Pick<PhotoFrameConfig, "enabled" | "idleSeconds" | "slideSeconds" | "blackout" | "portrait" | "landscape" | "kenBurns" | "webcams" | "webcamEvery" | "webcamsSkipEuropeAtNight" | "webcamsOnly"> & {
   shuffle: boolean;
 };
 

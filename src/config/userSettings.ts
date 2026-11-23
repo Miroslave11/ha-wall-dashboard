@@ -28,6 +28,7 @@ export function extractUserSettings(cfg: DashboardConfig): UserSettings {
       webcams: !!cfg.photoFrame.webcams,
       webcamEvery: cfg.photoFrame.webcamEvery ?? 4,
       webcamsSkipEuropeAtNight: !!cfg.photoFrame.webcamsSkipEuropeAtNight,
+      webcamsOnly: !!cfg.photoFrame.webcamsOnly,
       portrait: cfg.photoFrame.portrait ?? "blur",
       landscape: cfg.photoFrame.landscape ?? "crop",
       kenBurns: cfg.photoFrame.kenBurns ?? "on",
@@ -99,4 +100,14 @@ export function parseUserSettings(raw: unknown): UserSettings | null {
 /** Jsou dvě nastavení stejná? (pro tlačítko Uložit / indikaci neuložených změn) */
 export function sameSettings(a: UserSettings, b: UserSettings): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
+}
+
+/**
+ * Nastavení s jiným režimem fotorámečku (přepínač „Fotky + kamery“ / „Jen kamery“ přímo na rámečku).
+ * Vychází z uloženého nastavení, a když žádné není, z konfigurace; ostatní volby se nemění.
+ */
+export function withWebcamsOnly(saved: UserSettings | null, cfg: DashboardConfig, on: boolean): UserSettings {
+  const base = saved ? clone(saved) : extractUserSettings(cfg);
+  const pf = base.photoFrame ?? extractUserSettings(cfg).photoFrame!;
+  return { ...base, photoFrame: { ...pf, webcamsOnly: on } };
 }

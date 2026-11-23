@@ -79,12 +79,14 @@
         "w": 210,
         "h": 160,
         "lights": [
-          "light.pokoj"
+          "light.pokoj",
+          "light.pokoj_led"
         ],
         "temperature": "sensor.pokoj_teplota",
         "humidity": "sensor.pokoj_vlhkost",
         "fixtures": [
-          { "entity": "light.pokoj", "name": "Světlo v pracovně", "x": 105, "y": 380 }
+          { "entity": "light.pokoj", "name": "Světlo v pracovně", "x": 105, "y": 380 },
+          { "entity": "light.pokoj_led", "type": "strip", "name": "LED pásek za postelí", "x": 15, "y": 456, "length": 100 }
         ]
       },
       {
@@ -203,6 +205,7 @@
     "webcams": false,
     "webcamEvery": 4,
     "webcamsSkipEuropeAtNight": false,
+    "webcamsOnly": false,
     "source": {
       "type": "immich",
       "albumName": "Fotky pro wall panel"

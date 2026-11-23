@@ -1,6 +1,6 @@
 # Konfigurace (`config.json` / `config.local.json`)
 
-> **Většinu nastavení jde udělat přímo v aplikaci** (Nastavení v levém menu) – viz [Nastavení v aplikaci](#nastavení-v-aplikaci) na konci. Soubor je pak potřeba jen pro věci, které aplikace neumí (půdorys, nábytek, svítidla v plánu, motiv, zdroj fotek).
+> **Většinu nastavení jde udělat přímo v aplikaci** (Nastavení v levém menu) – viz [Nastavení v aplikaci](#nastavení-v-aplikaci) na konci. Soubor je pak potřeba jen pro věci, které aplikace neumí (půdorys, nábytek, motiv, zdroj fotek).
 
 Konfigurace se načítá **za běhu**. Aplikace nejdřív zkusí `config.local.json`, pak `config.json`. Chybějící klíče se doplní výchozími hodnotami (`src/config/loadConfig.ts`). Klíče začínající podtržítkem (`"_comment"`) se ignorují, dají se tedy použít jako poznámky. Typy jsou popsané v `src/config/types.ts`.
 
@@ -58,7 +58,7 @@ Kde najdeš entity ID: Home Assistant → Nastavení → Zařízení a služby �
 - `glow` – odkud v místnosti světlo září (CSS pozice). Nepoužije se, když má místnost `fixtures`.
 - `labelPos` – poloha názvu místnosti spolu s teplotou a vlhkostí: `"top-left"` (výchozí), `"top-right"`, `"bottom-left"`, `"bottom-right"`, `"center"` (uvnitř dlaždice; ikona žárovky přejde do protilehlého rohu, u `"center"` se nekreslí) nebo `"above"` / `"below"` (mimo dlaždici nad / pod místností, takže se v ní uvolní místo). Nastavuje se i v Nastavení → Místnosti → Poloha názvu a teploty.
 - `hideName` – `true` skryje název místnosti na půdorysu (teplota a vlhkost zůstanou, čtečka obrazovky název dál čte). Nastavuje se v Nastavení → Místnosti → *Skrýt název místnosti na půdorysu*.
-- `fixtures` – svítidla zakreslená v půdorysu. Každé září ze svého místa podle stavu své entity (svítí-li jen jedno, září jen ono) a klepnutím na něj se přepne samostatně. Ikona žárovky v rohu místnosti pak zmizí. Entity svítidel musí být i v `lights`. V Nastavení → Místnosti se svítidla přidávají tlačítkem *Přidat světlo do půdorysu* (polohu lze upravit). Zhasnutá místnost nemá žádný stavový text. Intenzitu (např. „53 %“) ukazují jen místnosti se svítícím LED páskem (`type: "strip"`), je to jas pásku a klepnutím na ni se otevře jeho panel (jas, barva). U žárovek se intenzita nezobrazuje.
+- `fixtures` – svítidla zakreslená v půdorysu. Každé září ze svého místa podle stavu své entity (svítí-li jen jedno, září jen ono) a klepnutím na něj se přepne samostatně. Ikona žárovky v rohu místnosti pak zmizí. Entity svítidel musí být i v `lights`. V Nastavení → Místnosti se svítidla přidávají tlačítkem *Přidat světlo do půdorysu* a LED pásky tlačítkem *Přidat LED pásek* (u pásku i délka a volba *Svisle*; nový vznikne u horní stěny uprostřed místnosti). Polohu lze upravit. Zhasnutá místnost nemá žádný stavový text. Intenzitu (např. „53 %“) ukazují jen místnosti se svítícím LED páskem (`type: "strip"`), je to jas pásku a klepnutím na ni se otevře jeho panel (jas, barva). U žárovek se intenzita nezobrazuje.
 
   ```json
   "fixtures": [
@@ -69,7 +69,7 @@ Kde najdeš entity ID: Home Assistant → Nastavení → Zařízení a služby �
   ```
 
   - `type` – `"bulb"` (žárovka, výchozí) nebo `"strip"` (LED pásek; je silnější než ostatní prvky, vypnutý je vidět jako světlý pruh a zapnutý vrhá výraznou záři; uprostřed má kulatý odznak s ikonou LED pásku, který zapnutý svítí barvou pásku).
-  - `x`, `y` – v souřadnicích půdorysu (stejných jako místnosti). Žárovka: střed. Pásek: levý konec (u svislého horní). Pásek na stěně dejte na hranu místnosti (např. `y` = horní okraj místnosti + 4).
+  - `x`, `y` – v souřadnicích půdorysu (stejných jako místnosti). Žárovka: střed. Pásek: levý konec (u svislého horní). Pásek na stěně dejte na hranu místnosti (např. `y` = horní okraj místnosti + 4, u dolní stěny dolní okraj − 4; v ukázce je tak pásek za postelí v pracovně: `"x": 15, "y": 456, "length": 100`).
   - `length` – délka pásku, `vertical: true` – svislý pásek.
 - `furniture` – obrysová kresba nábytku z `src/components/FloorplanFurniture.tsx` (pro výchozí půdorys).
 - `background` + `backgroundOpacity` – místo kresby vlastní obrázek půdorysu (PNG/SVG, stejné proporce), např. `/floorplan.png` v `public/`.
@@ -228,6 +228,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
   "webcams": false,
   "webcamEvery": 4,
   "webcamsSkipEuropeAtNight": false,
+  "webcamsOnly": false,
   "source": { "type": "immich", "albumName": "Fotky pro wall panel" },
   "blackout": { "from": "23:30", "to": "06:00", "screenOff": false }
 }
@@ -236,9 +237,9 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 - `portrait` – fotky na výšku (poznají se z rozměrů načtené fotky, funguje pro Immich i složku): `"blur"` (výchozí) celá fotka na rozostřeném pozadí, `"pair"` dvě fotky na výšku vedle sebe, `"black"` celá fotka na černém pozadí, `"crop"` ořez na celou obrazovku (dřívější chování). U `"pair"` se k fotce na výšku hledá druhá mezi následujícími šesti fotkami (a přesune se hned za ni); když žádná není, použije se `"blur"`. Rozostřené pozadí je zmenšená ztmavená kopie fotky (levné i na slabém tabletu); u fotky z cizí domény bez CORS se použije CSS rozostření (v `?lowpower` jen černá).
 - `landscape` – fotky na šířku: `"crop"` (výchozí) vyplní obrazovku s malým ořezem, `"blur"` celé na rozostřeném pozadí, `"black"` celé na černém.
 - `kenBurns` – pohyb fotek: `"on"` (výchozí) přiblížení a posun, `"subtle"` jemný, `"off"` žádný. Fotky zobrazené celé se hýbou nejvýš nepatrně (zvětšení 2,5 %), ať se okraje neořezávají.
-- `webcams` – prokládat fotky záběry z webkamer (`webcams`, kromě těch s `inFrame: false`); `webcamEvery` – jedna kamera po tolika fotkách (výchozí 4), kamery se střídají dokola. Snímek kamery se nikdy neořezává (rozostřené pozadí) a má v rohu její název. Nedostupná kamera (do 8 s se nenačte) se přeskočí. `webcamsSkipEuropeAtNight` – po západu slunce + 30 min (podle `header.sun`, do východu) se ve fotorámečku vynechají kamery z Evropy (`region` jiný než `"other"`), protože tam je tma; kamery s `region: "other"` zůstávají. Výchozí vypnuto, bez entity slunce se nic nevynechává. Nastavuje se i v Nastavení → Fotorámeček.
+- `webcams` – prokládat fotky záběry z webkamer (`webcams`, kromě těch s `inFrame: false`); `webcamEvery` – jedna kamera po tolika fotkách (výchozí 4), kamery se střídají dokola. Snímek kamery se nikdy neořezává (rozostřené pozadí) a má v rohu její název. Nedostupná kamera (do 8 s se nenačte) se přeskočí. `webcamsSkipEuropeAtNight` – po západu slunce + 30 min (podle `header.sun`, do východu) se ve fotorámečku vynechají kamery z Evropy (`region` jiný než `"other"`), protože tam je tma; kamery s `region: "other"` zůstávají. Výchozí vypnuto, bez entity slunce se nic nevynechává. `webcamsOnly` – jen webkamery bez fotek (platí jen se zapnutým `webcams`); když žádná kamera neodpoví nebo jsou v noci všechny vynechané, ukážou se fotky. Přepíná se i přímo na rámečku (nahoře uprostřed „Fotky + kamery“ / „Jen kamery“, ukládá se do nastavení z aplikace). Nastavuje se i v Nastavení → Fotorámeček.
 - Všechny tři volby se nastavují i v Nastavení → Fotorámeček → Zobrazení fotek (přepíšou hodnoty ze souboru).
-- **Listování:** vlevo a vpravo jsou malé šipky pro předchozí a další fotku. Zpět se dá vrátit až o 40 zobrazených snímků (u dvojice se vrací celá dvojice). Po ručním listování se prezentace na 60 s zastaví, aby šlo fotku prohlédnout; pak pokračuje, od místa, kde se skončilo (po návratu zpět nejdřív znovu projde už zobrazené snímky).
+- **Listování:** vlevo a vpravo jsou vysoké lišty se šipkou (88 × 360 px) pro předchozí a další snímek. Zpět se dá vrátit až o 40 zobrazených snímků (u dvojice se vrací celá dvojice). Po ručním listování se prezentace na 60 s zastaví, aby šlo fotku prohlédnout; pak pokračuje, od místa, kde se skončilo (po návratu zpět nejdřív znovu projde už zobrazené snímky).
 
 - `source.type: "immich"` – album v Immichi podle názvu (rozlišuje se jen velikost písmen mimo češtinu, okolní mezery se ignorují; najde i alba sdílená s uživatelem klíče). Volitelně `imageSize` (`"preview"` výchozí, ~1440 px, nebo `"fullsize"`) a `baseUrl` (výchozí `"/immich"`). Fotky se berou jako náhledy JPEG, takže funguje i HEIC; videa se přeskakují. Seznam se obnovuje každou hodinu. Nastavení Immiche viz README (proměnné `IMMICH_URL`, `IMMICH_API_KEY`).
 - `source.type: "autoindex"` – výpis složky z nginx (Docker, volume `/photos`). Ve vývoji (`npm run dev`) autoindex není, použij `"list"`.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CONFIG, deepMerge } from "./loadConfig";
 import type { DashboardConfig } from "./types";
-import { applyUserSettings, extractUserSettings, parseUserSettings, sameSettings } from "./userSettings";
+import { applyUserSettings, extractUserSettings, parseUserSettings, sameSettings, withWebcamsOnly } from "./userSettings";
 
 const cfg = (): DashboardConfig =>
   deepMerge(DEFAULT_CONFIG, {
@@ -101,6 +101,18 @@ describe("userSettings", () => {
     const stored = parseUserSettings(JSON.parse(JSON.stringify(s)));
     expect(stored?.rooms[0].hideName).toBe(true);
     expect(applyUserSettings(c, stored).floorplan.rooms[0].hideName).toBe(true);
+  });
+
+  it("režim Jen kamery z rámečku: změní jen webcamsOnly, bez uloženého nastavení vyjde z konfigurace", () => {
+    const c = cfg();
+    const fromFile = withWebcamsOnly(null, c, true);
+    expect(applyUserSettings(c, fromFile).photoFrame).toEqual({ ...c.photoFrame, webcamsOnly: true });
+    const saved = extractUserSettings(c);
+    saved.photoFrame!.slideSeconds = 30;
+    const out = withWebcamsOnly(saved, c, true);
+    expect(out.photoFrame).toEqual({ ...saved.photoFrame, webcamsOnly: true });
+    expect(saved.photoFrame!.webcamsOnly).toBe(false);
+    expect(withWebcamsOnly(out, c, false).photoFrame?.webcamsOnly).toBe(false);
   });
 
   it("parseUserSettings odmítne neznámý formát", () => {

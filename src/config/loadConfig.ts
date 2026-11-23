@@ -23,6 +23,7 @@ export const DEFAULT_CONFIG: DashboardConfig = {
     webcams: false,
     webcamEvery: 4,
     webcamsSkipEuropeAtNight: false,
+    webcamsOnly: false,
     source: { type: "list", urls: [] },
   },
 };

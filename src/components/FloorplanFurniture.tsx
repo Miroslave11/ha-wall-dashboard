@@ -32,7 +32,7 @@ export function FloorplanFurniture({ width, height }: { width: number; height: n
         <rect x="0" y="102" width="8" height="96" rx="1.5" />
         <path d="M4 102v96" />
       </g>
-      {/* Svítidla (2 žárovky, LED pásek) se nekreslí zde, ale dynamicky z floorplan.rooms[].fixtures */}
+      {/* Svítidla (žárovky i LED pásky, např. za postelí v pracovně) se nekreslí zde, ale dynamicky z floorplan.rooms[].fixtures */}
       {/* Obývák & kuchyň (300–640 × 0–300) */}
       {/* gauč v levém rohu (opěradlo u levé stěny, dvě sedáky) a před ním konferenční stolek */}
       <rect x="306" y="6" width="74" height="122" rx="9" />
@@ -78,8 +78,6 @@ export function FloorplanFurniture({ width, height }: { width: number; height: n
       <rect x="15" y="401" width="12" height="44" rx="5" />
       <rect x="31" y="401" width="84" height="44" rx="4" />
       <path d="M41 401v44" />
-      {/* bílý LED pásek na dolní stěně za postelí (jen kresba; ovladatelný je až jako `fixtures`) */}
-      <path d="M10 454h110" stroke="rgba(255,255,255,0.4)" strokeWidth={3} />
       {/* Šatna (210–300 × 300–460): nahoře sušička na prádlo, dole skříně s oblečením, mezi nimi volná chodba */}
       <rect x="226" y="308" width="40" height="28" rx="3" />
       <circle cx="246" cy="323" r="9" />
