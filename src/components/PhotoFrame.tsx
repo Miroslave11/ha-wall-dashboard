@@ -349,11 +349,12 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
                   type="button"
                   className={`pf-mode-btn${camsOnly === m.on ? " pf-mode-btn--on" : ""}`}
                   aria-pressed={camsOnly === m.on}
+                  aria-label={m.label}
+                  title={m.label}
                   tabIndex={active ? 0 : -1}
                   onClick={() => chooseCamsOnly(m.on)}
                 >
-                  <Icon name={m.icon} size={18} strokeWidth={1.8} />
-                  {m.label}
+                  <Icon name={m.icon} size={22} strokeWidth={1.8} />
                 </button>
               ))}
             </div>

@@ -2158,13 +2158,12 @@ p.form-error {
   right: 16px;
 }
 
-/* Přepínač Fotky + kamery / Jen kamery nahoře uprostřed */
+/* Přepínač Fotky + kamery / Jen kamery v pravém horním rohu, jen ikony */
 .pf-mode {
   position: absolute;
   top: 24px;
-  left: 50%;
+  right: 24px;
   z-index: 3;
-  transform: translateX(-50%);
   display: flex;
   gap: 4px;
   padding: 4px;
@@ -2176,16 +2175,14 @@ p.form-error {
 .pf-mode-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 0 20px;
+  justify-content: center;
+  width: 52px;
+  height: 48px;
+  padding: 0;
   border: 0;
   border-radius: 26px;
   background: transparent;
   color: rgba(255, 255, 255, 0.55);
-  font: inherit;
-  font-size: 16px;
-  font-weight: 500;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -2198,9 +2195,8 @@ p.form-error {
 .pf-mode-note {
   position: absolute;
   top: 92px;
-  left: 50%;
+  right: 24px;
   z-index: 3;
-  transform: translateX(-50%);
   white-space: nowrap;
   padding: 6px 14px;
   border-radius: 16px;

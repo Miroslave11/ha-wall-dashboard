@@ -4,7 +4,7 @@ Tento návod popisuje, jak dashboard ovládat na tabletu a jak ho nastavit. Inst
 [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md), technický popis pro programátory v
 [NAVOD-VYVOJAR.md](NAVOD-VYVOJAR.md).
 
-> Návod odpovídá verzi **1.2.1**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
+> Návod odpovídá verzi **1.2.2**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
 
 ## Obsah
 
@@ -148,8 +148,8 @@ a vpravo se přepíná na další. Snímky se samy obnovují. Když kamera nejde
 - **Klepnutí** fotorámeček ukončí a vrátí vás na stránku Domů.
 - Vysoké lišty se šipkami na levém a pravém okraji listují **vpřed a zpět** (stačí klepnout kamkoli na lištu).
   Po ručním listování se prezentace na minutu zastaví.
-- Může prokládat fotky záběry z webkamer. Když jsou webkamery ve fotorámečku zapnuté, je nahoře uprostřed
-  přepínač **Fotky + kamery** / **Jen kamery**. Volba se uloží a platí, dokud ji nezměníte. Když v noci
+- Může prokládat fotky záběry z webkamer. Když jsou webkamery ve fotorámečku zapnuté, jsou v pravém
+  horním rohu dvě ikony: **fotka** = Fotky + kamery, **kamera** = Jen kamery (zapnutá je ta podsvícená). Volba se uloží a platí, dokud ji nezměníte. Když v noci
   vypadnou všechny kamery (jen evropské a je zapnuté jejich vynechání po západu slunce), ukazují se
   i v režimu Jen kamery fotky a pod přepínačem je o tom poznámka.
 - **Noční režim**: v nastavené době (např. 23:30–6:00) je místo fotek černá obrazovka. S Fully Kiosk

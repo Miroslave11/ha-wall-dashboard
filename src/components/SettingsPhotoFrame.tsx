@@ -160,7 +160,7 @@ export function SettingsPhotoFrame({ draft, update }: Props) {
               <input type="checkbox" checked={!!p.webcamsOnly} onChange={(e) => update((d) => void (d.photoFrame!.webcamsOnly = e.target.checked))} />
               <span>Jen webkamery, bez fotek</span>
             </label>
-            <span className="hint">Přepíná se i přímo na fotorámečku tlačítky nahoře uprostřed (Fotky + kamery / Jen kamery).</span>
+            <span className="hint">Přepíná se i přímo na fotorámečku ikonami v pravém horním rohu (fotka = Fotky + kamery, kamera = Jen kamery).</span>
             <span className="hint">
               Začne 30 minut po západu slunce u vás (entita slunce v Nastavení → Ostatní entity) a trvá do východu. Kamery označené v záložce Webkamery jako „Mimo
               Evropu“ se zobrazují dál.

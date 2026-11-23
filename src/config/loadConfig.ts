@@ -70,13 +70,15 @@ export function validateConfig(cfg: DashboardConfig): string[] {
         continue;
       }
       if (Array.isArray(r.lights) && !r.lights.includes(f.entity)) {
-        errors.push(`Místnost ${r.id}: svítidlo ${f.entity} musí být uvedeno i v "lights"`);
+        errors.push(`Místnost ${r.name || r.id}: svítidlo ${f.entity} musí být uvedeno i v "lights" (mezi světly místnosti)`);
       }
       if (f.type === "strip" && !(typeof f.length === "number" && f.length > 0)) {
         errors.push(`Místnost ${r.id}: LED pásek ${f.entity} potřebuje kladnou "length"`);
       }
       if (f.x < r.x || f.y < r.y || f.x > r.x + r.w || f.y > r.y + r.h) {
-        errors.push(`Místnost ${r.id}: svítidlo ${f.entity} leží mimo místnost`);
+        errors.push(
+          `Místnost ${r.name || r.id}: svítidlo ${f.entity} leží mimo místnost (poloha ${f.x}, ${f.y}; místnost je na X ${r.x}–${r.x + r.w}, Y ${r.y}–${r.y + r.h})`,
+        );
       }
     }
   }

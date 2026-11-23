@@ -50,3 +50,9 @@ export function newFixture(room: RoomConfig, strip: boolean): FixtureConfig {
   const length = Math.round(Math.min(100, room.w / 2));
   return { entity: "", type: "strip", name: `LED pásek ${n}`, x: Math.round(room.x + (room.w - length) / 2), y: room.y + WALL, length };
 }
+
+/** Doplní do světel místnosti entity jejích svítidel, které tam chybí (validace je vyžaduje). */
+export function syncFixtureLights(room: RoomConfig): void {
+  const missing = (room.fixtures ?? []).map((f) => f.entity).filter((id, i, all) => id && !room.lights.includes(id) && all.indexOf(id) === i);
+  if (missing.length) room.lights = [...missing, ...room.lights];
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BULB_GLOW, fixtureGeometry, isStrip, newFixture } from "./fixtures";
+import { BULB_GLOW, fixtureGeometry, isStrip, newFixture, syncFixtureLights } from "./fixtures";
 
 describe("fixtureGeometry", () => {
   it("žárovka: střed je přímo x/y a záře je kruh", () => {
@@ -41,5 +41,26 @@ describe("newFixture", () => {
     const f = newFixture({ ...room, fixtures: [{ entity: "light.a", type: "strip", x: 15, y: 456, length: 100 }] }, true);
     expect(f).toEqual({ entity: "", type: "strip", name: "LED pásek 2", x: 55, y: 304, length: 100 });
     expect(isStrip(f)).toBe(true);
+  });
+});
+
+describe("syncFixtureLights", () => {
+  it("doplní chybějící entity svítidel do světel, prázdné a existující nechá", () => {
+    const room = {
+      id: "pokoj",
+      name: "Pracovna",
+      x: 0,
+      y: 300,
+      w: 210,
+      h: 160,
+      lights: ["switch.a"],
+      fixtures: [
+        { entity: "switch.a", x: 105, y: 370 },
+        { entity: "light.led", type: "strip" as const, x: 10, y: 456, length: 110 },
+        { entity: "", x: 50, y: 350 },
+      ],
+    };
+    syncFixtureLights(room);
+    expect(room.lights).toEqual(["light.led", "switch.a"]);
   });
 });

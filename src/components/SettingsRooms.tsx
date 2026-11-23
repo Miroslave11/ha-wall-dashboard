@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { LabelPos, RoomConfig, UserSettings } from "../config/types";
 import { useHass } from "../ha/HassContext";
 import { suggestRoomFromArea, uniqueRoomId, type EntityFilter } from "../utils/entityOptions";
-import { newFixture } from "../utils/fixtures";
+import { newFixture, syncFixtureLights } from "../utils/fixtures";
 import { czPlural } from "../utils/format";
 import { LABEL_POSITIONS } from "../utils/labels";
 import type { HaRegistry } from "../utils/registry";
@@ -97,7 +97,7 @@ export function SettingsRooms({ draft, update, registry }: Props) {
 function RoomEditor({
   room,
   registry,
-  onChange,
+  onChange: onChangeRoom,
   onDelete,
 }: {
   room: RoomConfig;
@@ -106,6 +106,12 @@ function RoomEditor({
   onDelete: () => void;
 }) {
   const { entities } = useHass();
+  /** Každá úprava místnosti: svítidla v půdorysu musí zůstat i mezi jejími světly (např. po změně entity jiného svítidla). */
+  const onChange = (fn: (r: RoomConfig) => void) =>
+    onChangeRoom((r) => {
+      fn(r);
+      syncFixtureLights(r);
+    });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [fillMsg, setFillMsg] = useState<string | null>(null);
   const fixtures = room.fixtures ?? [];
@@ -287,8 +293,9 @@ function RoomEditor({
       </div>
       {fixtures.length > 0 && (
         <span className="hint">
-          Polohu svítidla zadejte v souřadnicích půdorysu (stejných jako X/Y místnosti). Každé svítidlo září a přepíná se samostatně. U LED pásku je
-          poloha jeho levý (u svislého horní) konec; pásek na stěně má Y (u svislého X) přímo na vnitřní hraně stěny, tedy 4 od okraje místnosti.
+          Polohu svítidla zadejte v souřadnicích celého půdorysu, ne od rohu místnosti: {room.name || "místnost"} leží na X {room.x}–{room.x + room.w},
+          Y {room.y}–{room.y + room.h}. Každé svítidlo září a přepíná se samostatně. U LED pásku je poloha jeho levý (u svislého horní) konec; pásek
+          na stěně má Y (u svislého X) přímo na vnitřní hraně stěny, tedy 4 od okraje místnosti (u dolní stěny Y {room.y + room.h - 4}).
         </span>
       )}
 
