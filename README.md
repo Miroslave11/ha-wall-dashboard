@@ -9,9 +9,9 @@ Nástěnný dashboard pro Home Assistant ve skleněném (glassmorphism) stylu. J
 - Stránky Topení (termohlavice s plánem), Radar (srážky) a Kamery (webkamery).
 - Scény jsou v configu a v Nastavení, na úvodní stránce se zatím nezobrazují.
 - Počasí s 5denní předpovědí, teploty s 24h grafem z historie HA.
-- Robotický vysavač (start / do doku) a žaluzie (nahoru / napůl / dolů).
+- Robotický vysavač (úklid / do doku, úklid vybraných místností z mapy). Stránka Žaluzie se teprve připravuje.
 - Horní lišta: hodiny, východ/západ slunce, baterie žaluzií, upozornění (otevřená okna…), přítomnost.
-- **Fotorámeček**: po nastavené době nečinnosti se spustí prezentace fotek z NASu s hodinami a počasím. V noci může být černá obrazovka.
+- **Fotorámeček**: po nastavené době nečinnosti se spustí prezentace fotek z NASu (Immich nebo složka) s hodinami a počasím. Listování šipkami, volitelně prokládání webkamerami nebo jen webkamery (přepínač přímo na rámečku), u kamery nadpis místa s aktuální teplotou (Open-Meteo). V noci může být černá obrazovka.
 - **Demo režim** se simulovanými entitami, takže vývoj jde i bez Home Assistantu.
 - Plocha 1280×800 se automaticky škáluje na libovolné rozlišení tabletu.
 
@@ -52,7 +52,7 @@ npm run build       # produkční build do dist/
 2. Otevři dashboard (běží demo) → **Nastavení → Připojení** → zadej adresu HA (např. `http://192.168.1.10:8123`) → *Připojit a přihlásit* → přihlas se do HA.
 3. **Nastavení → Místnosti / Ostatní entity**: vyber entity ze seznamu (nebo *Doplnit z oblasti*) a dej *Uložit*. Nastavení se uloží přímo do Home Assistantu k přihlášenému uživateli.
 
-Podrobnosti v [docs/KONFIGURACE.md – Nastavení v aplikaci](docs/KONFIGURACE.md#nastavení-v-aplikaci). Postup přes soubor níže funguje dál – hodí se pro půdorys, svítidla v plánu, motiv a fotorámeček.
+Podrobnosti v [docs/KONFIGURACE.md – Nastavení v aplikaci](docs/KONFIGURACE.md#nastavení-v-aplikaci). Postup přes soubor níže funguje dál – hodí se pro rozměry půdorysu, nábytek, motiv a zdroj fotek fotorámečku.
 
 1. **Konfigurace.** Zkopíruj šablonu a vyplň URL Home Assistantu a svoje entity:
    ```bash
@@ -108,7 +108,8 @@ Kořenový `docker-compose.yml` sestaví image ze zdrojáků: zkopíruj celý pr
   4. Pro vývoj (`npm run dev`) stejný `.env` použije proxy ve `vite.config.ts`.
   Immich převádí HEIC i RAW na JPEG, takže zmenšování fotek ani výběr formátu není potřeba.
 - **Složka na NASu:** fotky se berou ze složky připojené jako `/photos` (`"type": "autoindex"`). Nginx vrací její výpis v JSON a aplikace z něj vybírá obrázky (jpg, png, webp, avif), včetně podsložek do hloubky `maxDepth`. Systémové složky Synology (`@eaDir`) se přeskakují.
-- Spustí se po `photoFrame.idleSeconds` bez dotyku, nebo hned tlačítkem **Rámeček** v menu. Klepnutím se vrátíš na hlavní stránku.
+- Spustí se po `photoFrame.idleSeconds` bez dotyku, nebo hned tlačítkem **Rámeček** v menu. Klepnutím se vrátíš na hlavní stránku, šipky u okrajů listují vpřed a zpět.
+- **Webkamery ve fotorámečku** (`photoFrame.webcams`): kamery se prokládají mezi fotky, ikonami vpravo nahoře jde přepnout na jen kamery. Kamera s nastaveným místem (`webcams[].place`, v aplikaci Nastavení → Webkamery) má nadpis s aktuální teplotou a počasím z [Open-Meteo](https://open-meteo.com) (bez klíče; posílají se jen souřadnice místa).
 - `photoFrame.blackout` nastaví noční okno s černou obrazovkou. S `"screenOff": true` a Fully Kiosk Browserem (zapnutý *JavaScript Interface*) se displej i fyzicky vypne.
 - **Tip na velikost:** pro tablet stačí fotky kolem 1920 px na delší straně. Originály z mobilu (4000+ px, HEIC) jsou zbytečně velké a HEIC prohlížeč nezobrazí. Na Synology se dá připravit složka se zmenšenými JPG (např. úlohou v Plánovači úloh).
 
@@ -129,7 +130,7 @@ src/
   ha/            připojení k HA (realClient), demo simulace (mockClient), akce, React kontext
   components/    UI komponenty (půdorys, karty, fotorámeček, stránky)
   hooks/         hodiny, nečinnost, historie, předpověď, škálování plochy
-  utils/         formátování (čeština), historie → graf, fotky, počasí
+  utils/         formátování (čeština), historie → graf, fotky, počasí, webkamery, teplota na místě kamery
   styles/        global.css – celý vzhled, barvy motivu přes CSS proměnné
 public/
   config.json    demo konfigurace

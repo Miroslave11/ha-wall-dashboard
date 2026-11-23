@@ -253,15 +253,15 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 V levém menu **Nastavení** má pět záložek:
 
 - **Připojení** – adresa Home Assistantu. Po zadání se ověří, že na ní HA odpovídá, a tablet se přesměruje na přihlášení (vždy OAuth, token se v aplikaci nezadává). Adresa se uloží v prohlížeči tabletu (localStorage) a má přednost před `hass.url` ze souboru. Tlačítko *Použít adresu ze souboru* ji zase smaže.
-- **Místnosti** – název, oblast v HA, světla, svítidla v půdorysu, teploměr, vlhkoměr, pohybové čidlo; přidání a smazání místnosti. Poloha v půdorysu je v části *Pokročilé*.
+- **Místnosti** – název, oblast v HA, světla, svítidla a LED pásky v půdorysu (poloha, u pásku délka a svislý/vodorovný), teploměr, vlhkoměr, pohybové čidlo; přidání a smazání místnosti. Poloha v půdorysu je v části *Pokročilé*.
 - **Ostatní entity** – počasí, grafy teplot, vysavač, žaluzie, scény (i `script.*`) a horní lišta (slunce, přítomnost, baterie, upozornění).
-- **Webkamery** – seznam kamer pro stránku Kamery (název, skupina, snímek nebo YouTube, obnova, zdroj, zda je dát do fotorámečku, zda jsou mimo Evropu), řazení a odebrání.
-- **Fotorámeček** – zapnutí, po jaké nečinnosti se spustí, doba zobrazení jedné fotky, náhodné pořadí a noční černá obrazovka (od–do, volitelně vypnutí displeje). Zdroj fotek (`photoFrame.source`) se mění jen v souboru.
+- **Webkamery** – seznam kamer pro stránku Kamery (název, skupina, snímek nebo YouTube, obnova, zdroj, zda je dát do fotorámečku, zda jsou mimo Evropu, místo kamery pro teplotu ve fotorámečku), řazení a odebrání.
+- **Fotorámeček** – zapnutí, po jaké nečinnosti se spustí, doba zobrazení jedné fotky, náhodné pořadí, zobrazení fotek na výšku a na šířku, pohyb fotek, webkamery ve fotorámečku (po kolika fotkách, vynechání evropských kamer v noci, jen webkamery bez fotek) a noční černá obrazovka (od–do, volitelně vypnutí displeje). Zdroj fotek (`photoFrame.source`) se mění jen v souboru.
 
 Entity se vybírají ze seznamu s hledáním (bez diakritiky – „prac“ najde „Pracovna“). Nahoře jsou entity z oblasti místnosti a se správným typem čidla. Skryté a konfigurační entity se ukážou jen při hledání.
 
 **Kam se ukládá:** po *Uložit* do Home Assistantu k přihlášenému uživateli (WS `frontend/set_user_data`, klíč `ha-wall-dashboard`). Nastavení tedy nezmizí při smazání dat prohlížeče a dá se upravit i z počítače – stačí se přihlásit jako stejný uživatel (např. „Tablet“). Víc tabletů pod stejným uživatelem sdílí stejné nastavení. V demo režimu se ukládá do prohlížeče.
 
-**Přednost:** uložené nastavení přepíše v konfiguraci ze souboru `floorplan.rooms`, `header`, `scenes`, `weather`, `temperatures`, `vacuum`, `blinds` a v `photoFrame` volby `enabled`, `idleSeconds`, `slideSeconds`, `shuffle`, `portrait`, `landscape`, `kenBurns` a `blackout`. Ostatní (rozměry půdorysu, nábytek, motiv, zdroj fotek) zůstává ze souboru. Tlačítko *Smazat nastavení z aplikace* (záložka Připojení) vrátí vše na soubor.
+**Přednost:** uložené nastavení přepíše v konfiguraci ze souboru `floorplan.rooms` (bez polohy a velikosti místností), `header`, `scenes`, `weather`, `temperatures`, `vacuum`, `blinds`, `webcams` a v `photoFrame` volby `enabled`, `idleSeconds`, `slideSeconds`, `shuffle`, `portrait`, `landscape`, `kenBurns`, `webcams`, `webcamEvery`, `webcamsSkipEuropeAtNight`, `webcamsOnly` a `blackout`. Ostatní (rozměry půdorysu, nábytek, motiv, zdroj fotek) zůstává ze souboru. Tlačítko *Smazat nastavení z aplikace* (záložka Připojení) vrátí vše na soubor.
 
 Před uložením proběhne stejná kontrola jako u souboru (`validateConfig`), chyby se ukážou dole na stránce.

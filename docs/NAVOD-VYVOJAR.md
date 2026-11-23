@@ -190,7 +190,7 @@ Demo je hlavní vývojový nástroj a ukázka pro nové uživatele.
 
 | modul | komponenty | logika | konfigurace |
 |---|---|---|---|
-| Půdorys | `FloorplanCard`, `RoomTile`, `FixtureControl`, `FloorplanFurniture`, `PassageLines`, `Projector`, `RoomClimate` | `utils/fixtures.ts` (geometrie, `newFixture` pro přidání v Nastavení), `utils/passages.ts`, `utils/projector.ts`, `ha/actions.ts` | `floorplan` |
+| Půdorys | `FloorplanCard`, `RoomTile`, `FixtureControl`, `FloorplanFurniture`, `PassageLines`, `Projector`, `RoomClimate` | `utils/fixtures.ts` (geometrie, `newFixture` a `syncFixtureLights` pro Nastavení), `utils/passages.ts`, `utils/projector.ts`, `ha/actions.ts` | `floorplan` |
 | Detail světel | `LightDetailModal`, `LightSlider` | `utils/lightColor.ts` (`lightCaps` z `supported_color_modes`), `setLight*` v `actions.ts` | `fixtures`, `lights` |
 | Vysavač v půdorysu | `VacuumDot` | `utils/vacuumMap.ts` (orientace ze spárovaných místností, poloha relativně v místnosti) | `vacuum` |
 | Horní lišta | `TopBar` | | `header` |

@@ -29,8 +29,8 @@ Všechno, co na dashboardu vidíte, je aktuální stav z HA. Když něco přepne
 - Půdorys bytu se světly, teplotou, vlhkostí a pohybem v místnostech.
 - Ovládání světel včetně jasu, barvy a efektů.
 - Počasí, předpověď a grafy teplot.
-- Vysavač, žaluzie, topení, srážkový radar a webkamery.
-- Fotorámeček: když na tablet nikdo nesahá, ukazuje fotky s hodinami a počasím.
+- Vysavač, topení, srážkový radar a webkamery (stránka Žaluzie se připravuje).
+- Fotorámeček: když na tablet nikdo nesahá, ukazuje fotky (a webkamery s aktuální teplotou) s hodinami a počasím.
 
 ## První spuštění
 
