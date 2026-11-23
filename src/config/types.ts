@@ -238,6 +238,19 @@ export interface PhotoFrameConfig {
   blackout?: { from: string; to: string; screenOff?: boolean };
 }
 
+/** Místo webkamery: podle něj se ve fotorámečku ukazuje aktuální teplota (Open-Meteo). */
+export interface WebcamPlace {
+  /** Název místa z hledání, např. "Sněžka". */
+  name?: string;
+  /** Země, zobrazí se pod nadpisem, např. "Česko". */
+  country?: string;
+  /** Zeměpisná šířka a délka (WGS84). */
+  lat: number;
+  lon: number;
+  /** Nadmořská výška v metrech: zpřesní teplotu na horách a zobrazí se pod nadpisem. */
+  elevation?: number;
+}
+
 /** Webkamera na stránce Kamery (a volitelně ve fotorámečku), viz `webcams`. */
 export interface WebcamConfig {
   /** Unikátní ID (jen pro aplikaci). */
@@ -261,6 +274,8 @@ export interface WebcamConfig {
   region?: "europe" | "other";
   /** Odkud kamera je (provozovatel nebo web), zobrazí se na celé obrazovce. */
   source?: string;
+  /** Kde kamera je: ve fotorámečku se pod jejím názvem ukáže aktuální teplota a počasí na tom místě. */
+  place?: WebcamPlace;
 }
 
 export interface DashboardConfig {

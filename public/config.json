@@ -87,10 +87,10 @@
   },
   "blinds": { "entity": "cover.zaluzie_obyvak", "name": "Žaluzie" },
   "webcams": [
-    { "id": "demo-hory", "name": "Demo: hory", "group": "Demo", "type": "image", "url": "/photos/demo-hory.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
-    { "id": "demo-jezero", "name": "Demo: jezero", "group": "Demo", "type": "image", "url": "/photos/demo-jezero.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
-    { "id": "demo-more", "name": "Demo: moře", "group": "Demo", "type": "image", "url": "/photos/demo-more.jpg", "refreshSec": 60, "source": "ukázkový snímek" },
-    { "id": "demo-les", "name": "Demo: les", "group": "Demo", "type": "image", "url": "/photos/demo-les.jpg", "refreshSec": 60, "source": "ukázkový snímek" }
+    { "id": "demo-hory", "name": "Demo: hory", "group": "Demo", "type": "image", "url": "/photos/demo-hory.jpg", "refreshSec": 60, "source": "ukázkový snímek", "place": { "name": "Sněžka", "country": "Česko", "lat": 50.7361, "lon": 15.7398, "elevation": 1603 } },
+    { "id": "demo-jezero", "name": "Demo: jezero", "group": "Demo", "type": "image", "url": "/photos/demo-jezero.jpg", "refreshSec": 60, "source": "ukázkový snímek", "place": { "name": "Lipno nad Vltavou", "country": "Česko", "lat": 48.6321, "lon": 14.2208, "elevation": 730 } },
+    { "id": "demo-more", "name": "Demo: moře", "group": "Demo", "type": "image", "url": "/photos/demo-more.jpg", "refreshSec": 60, "source": "ukázkový snímek", "place": { "name": "Split", "country": "Chorvatsko", "lat": 43.5089, "lon": 16.4392, "elevation": 10 } },
+    { "id": "demo-les", "name": "Demo: les", "group": "Demo", "type": "image", "url": "/photos/demo-les.jpg", "refreshSec": 60, "source": "ukázkový snímek", "place": { "name": "Boubín", "country": "Česko", "lat": 48.9937, "lon": 13.8183, "elevation": 1362 } }
   ],
   "photoFrame": {
     "enabled": true,

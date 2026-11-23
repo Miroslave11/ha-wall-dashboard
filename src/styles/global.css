@@ -1400,14 +1400,14 @@ h2 {
 }
 
 .wc-table {
-  min-width: 780px;
+  min-width: 830px;
   display: flex;
   flex-direction: column;
 }
 
 .wc-row {
   display: grid;
-  grid-template-columns: minmax(110px, 1fr) 100px 92px minmax(0, 1.6fr) 62px 90px 40px 52px 136px;
+  grid-template-columns: minmax(110px, 1fr) 90px 92px minmax(0, 1.6fr) 58px 74px 40px 52px 44px 136px;
   gap: 8px;
   align-items: center;
   padding: 5px 0;
@@ -1483,6 +1483,76 @@ h2 {
   font-size: 12px;
   font-weight: 400;
   color: var(--text-3);
+}
+
+/* Místo kamery (teplota ve fotorámečku): tlačítko v řádku a rozbalené nastavení pod ním */
+.wc-place-btn {
+  opacity: 0.45;
+}
+
+.wc-place-btn--set {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.wc-place {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 10px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wc-place .hint {
+  margin: 0;
+}
+
+.wc-place-search {
+  display: flex;
+  gap: 8px;
+}
+
+.wc-place-search .input {
+  flex: 1;
+  height: 40px;
+}
+
+.wc-place-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wc-place-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.wc-place-result span {
+  color: var(--text-3);
+}
+
+.wc-place-coords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.wc-place-coords .field--num {
+  width: 130px;
 }
 
 .wc-add {
@@ -2122,7 +2192,7 @@ p.form-error {
   position: relative;
 }
 
-/* Šipky pro listování: vysoké lišty u okrajů, ať se do nich dá snadno trefit */
+/* Šipky pro listování: neviditelné vysoké plochy u okrajů (ať se dá snadno trefit), vidět je jen šipka */
 .pf-nav {
   position: absolute;
   top: 50%;
@@ -2131,15 +2201,17 @@ p.form-error {
   height: 360px;
   margin-top: -180px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 0;
   border-radius: 44px;
-  background: rgba(10, 14, 28, 0.32);
+  background: transparent;
   color: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0.7;
   transition: opacity 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.6));
 }
 
 .pf-nav:active {
@@ -3917,14 +3989,30 @@ p.form-error {
 .pf-caption {
   position: absolute;
   left: 56px;
-  top: 28px;
+  top: 32px;
+  max-width: 60%;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.pf-caption-title {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.pf-caption-sub {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.4);
-  font-size: 15px;
-  color: #fff;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pf-caption-sub svg {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
 }

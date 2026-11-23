@@ -4,7 +4,7 @@ Tento návod popisuje, jak dashboard ovládat na tabletu a jak ho nastavit. Inst
 [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md), technický popis pro programátory v
 [NAVOD-VYVOJAR.md](NAVOD-VYVOJAR.md).
 
-> Návod odpovídá verzi **1.2.2**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
+> Návod odpovídá verzi **1.3.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
 
 ## Obsah
 
@@ -146,12 +146,16 @@ a vpravo se přepíná na další. Snímky se samy obnovují. Když kamera nejde
   **Rámeček** v menu.
 - Ukazuje fotky z alba v Immichi nebo ze složky na NASu, k tomu hodiny, datum a počasí.
 - **Klepnutí** fotorámeček ukončí a vrátí vás na stránku Domů.
-- Vysoké lišty se šipkami na levém a pravém okraji listují **vpřed a zpět** (stačí klepnout kamkoli na lištu).
+- Šipky na levém a pravém okraji listují **vpřed a zpět**. Kolem každé je neviditelná vysoká plocha, stačí
+  klepnout kamkoli u okraje do výšky asi poloviny obrazovky.
   Po ručním listování se prezentace na minutu zastaví.
 - Může prokládat fotky záběry z webkamer. Když jsou webkamery ve fotorámečku zapnuté, jsou v pravém
   horním rohu dvě ikony: **fotka** = Fotky + kamery, **kamera** = Jen kamery (zapnutá je ta podsvícená). Volba se uloží a platí, dokud ji nezměníte. Když v noci
   vypadnou všechny kamery (jen evropské a je zapnuté jejich vynechání po západu slunce), ukazují se
   i v režimu Jen kamery fotky a pod přepínačem je o tom poznámka.
+- U záběru z webkamery je vlevo nahoře **nadpis místa** a pod ním **aktuální teplota**, počasí, země
+  a nadmořská výška. Teplota se ukazuje u kamer, kterým je nastavené místo (Nastavení → Webkamery,
+  ikona špendlíku); je z meteorologické služby Open-Meteo a obnovuje se po 15 minutách.
 - **Noční režim**: v nastavené době (např. 23:30–6:00) je místo fotek černá obrazovka. S Fully Kiosk
   Browserem se displej může i úplně vypnout.
 - V Nastavení se fotorámeček sám nespouští, aby se neztratily rozpracované změny.
@@ -195,6 +199,11 @@ Seznam kamer: název, skupina, typ (**Snímek** = obrázek z adresy, **YouTube**
 snímek obnovuje, zdroj (zobrazí se na celé obrazovce) a zda se kamera ukazuje ve fotorámečku a zda je **mimo Evropu** (jiné časové pásmo). Kamery jde
 přesouvat šipkami a hledat. Pozor: provozovatel kamery musí povolit zobrazení jejího snímku na cizí stránce,
 jinak se nenačte.
+
+**Místo kamery** (ikona špendlíku v řádku kamery; svítí, když je místo nastavené): napište název místa,
+klepněte na **Najít** a vyberte správný výsledek (s krajem, zemí a výškou). Když místo nenajdete, zadejte
+šířku a délku ručně (např. z mapy) a případně nadmořskou výšku – na horách zpřesní teplotu. Podle místa se
+ve fotorámečku u kamery ukazuje aktuální teplota.
 
 ### Fotorámeček
 

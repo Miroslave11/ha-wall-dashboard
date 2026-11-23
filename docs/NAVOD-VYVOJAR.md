@@ -4,7 +4,7 @@ Jak aplikace funguje uvnitř, jak ji spustit, rozšířit a vydat. Ovládání z
 [NAVOD-UZIVATEL.md](NAVOD-UZIVATEL.md), všechny konfigurační klíče v [KONFIGURACE.md](KONFIGURACE.md),
 nasazení na NAS v [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md).
 
-> Návod odpovídá verzi **1.2.2**.
+> Návod odpovídá verzi **1.3.0**.
 
 ## Obsah
 
@@ -38,7 +38,7 @@ NAS tedy neslouží jako backend, jen jako webový server. Výjimkou je proxy pr
 │                      │          │ /immich/* ──proxy+klíč──►│──► Immich
 │                      │          └──────────────────────────┘
 │                      │◄═══════════ WebSocket + OAuth ═══════════════► HA :8123
-│                      │──────────► internet: RainViewer, Esri, webkamery, YouTube
+│                      │──────────► internet: RainViewer, Esri, webkamery, YouTube, Open-Meteo
 └──────────────────────┘
 ```
 
@@ -199,9 +199,9 @@ Demo je hlavní vývojový nástroj a ukázka pro nové uživatele.
 | Vysavač | `DevicesCard`, `VacuumRoomsModal` (výběr místností) | `vacuumToggle`, `vacuumCleanRooms` (`vacuum.send_command` + `app_segment_clean`, protože xiaomi_miio nemá `clean_area`), `vacuumLocate`; `utils/vacuumRooms.ts` (místnosti z `roomMap`), `VacuumMapPicker` (skutečná mapa z `vacuum.mapEntity`: image entita extractoru, `utils/vacuumMap.ts` → `parseVacuumImage`, `roomPixelRect`; záloha schematický půdorys; adresa obrázku z `HassClient.hassUrl`) | `vacuum` |
 | Topení | `HeatingPage`, `HeaterCard`, `HeaterDial`, `HeaterScheduleModal` | `utils/heating.ts`, `setHeater*` | `heating` |
 | Radar | `RadarPage` (líně načtená) | `utils/radar.ts`, `hooks/useRadarFrames` (RainViewer) | `radar` |
-| Kamery | `CamerasPage`, `WebcamTile`, `WebcamViewer` | `utils/webcams.ts`, `hooks/useWebcamSnapshot` | `webcams` |
-| Fotorámeček | `PhotoFrame` | `utils/photos.ts` (list, autoindex, Immich), `utils/photoLayout.ts` (noc a filtr evropských kamer: `isNightAfterSunset`, `frameWebcams` v `utils/webcams.ts`); přepínač Fotky + kamery / Jen kamery ukládá `photoFrame.webcamsOnly` přes `withWebcamsOnly` (`config/userSettings.ts`) a `saveUserSettings` | `photoFrame` |
-| Nastavení | `SettingsPage`, `SettingsRooms`, `SettingsOther`, `SettingsWebcams`, `SettingsPhotoFrame`, `ConnectForm`, `EntityPicker` | `config/userSettings.ts`, `utils/entityOptions.ts`, `utils/registry.ts` | `UserSettings` |
+| Kamery | `CamerasPage`, `WebcamTile`, `WebcamViewer` | `utils/webcams.ts`, `hooks/useWebcamSnapshot`, `utils/placeWeather.ts` (teplota na místě kamery z Open-Meteo, mezipaměť 15 min; hledání místa) | `webcams` |
+| Fotorámeček | `PhotoFrame`, `WebcamCaption` (nadpis kamery s teplotou) | `utils/photos.ts` (list, autoindex, Immich), `utils/photoLayout.ts` (noc a filtr evropských kamer: `isNightAfterSunset`, `frameWebcams` v `utils/webcams.ts`); přepínač Fotky + kamery / Jen kamery ukládá `photoFrame.webcamsOnly` přes `withWebcamsOnly` (`config/userSettings.ts`) a `saveUserSettings` | `photoFrame` |
+| Nastavení | `SettingsPage`, `SettingsRooms`, `SettingsOther`, `SettingsWebcams` (+ `WebcamPlaceEditor`), `SettingsPhotoFrame`, `ConnectForm`, `EntityPicker` | `config/userSettings.ts`, `utils/entityOptions.ts`, `utils/registry.ts` | `UserSettings` |
 | Aktualizace | (`App.tsx`) | `utils/appVersion.ts`, `hooks/useAppUpdate` | — |
 
 Stránky Vysavač, Zahrádka a Žaluzie jsou zatím `PlaceholderPage`.

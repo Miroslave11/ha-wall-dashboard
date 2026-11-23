@@ -20,6 +20,9 @@ import {
 import { weatherIconColor, weatherInfo } from "../utils/weather";
 import { frameWebcams, isNightAfterSunset, webcamSnapshotUrls } from "../utils/webcams";
 import { Icon } from "./Icon";
+import { WebcamCaption } from "./WebcamCaption";
+import { fetchPlaceWeather, isValidPlace } from "../utils/placeWeather";
+import type { WebcamConfig } from "../config/types";
 
 /** Jedna fotka na slajdu: rozměry a (u rozostřeného pozadí) zmenšená kopie. */
 interface SlideItem {
@@ -31,8 +34,8 @@ interface Layer {
   key: number;
   fit: Fit;
   items: SlideItem[];
-  /** Název webkamery, když slajd není fotka. */
-  caption?: string;
+  /** Webkamera, když slajd není fotka (nadpis s místem a teplotou). */
+  cam?: WebcamConfig;
 }
 
 /** Rozhraní Fully Kiosk Browseru (Nastavení → Advanced Web Settings → Enable JavaScript Interface). */
@@ -114,8 +117,8 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
   camsOnlyRef.current = camsOnly;
   const sinceWebcam = useRef(0);
   const camIdx = useRef(0);
-  /** Adresa snímku webkamery → její název (podle toho se pozná, že slajd není fotka). */
-  const captions = useRef(new Map<string, string>());
+  /** Adresa snímku webkamery → kamera (podle toho se pozná, že slajd není fotka). */
+  const captions = useRef(new Map<string, WebcamConfig>());
 
   // Seznam fotek – načíst při startu a pak každou hodinu
   useEffect(() => {
@@ -141,15 +144,15 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
   const showUrls = useCallback(async (urls: string[], push: boolean) => {
     const loaded = await Promise.all(urls.map((u) => loadPhoto(u)));
     const first = loaded[0];
-    const caption = captions.current.get(urls[0]);
+    const cam = captions.current.get(urls[0]);
     // snímek webkamery se nikdy neořezává
-    const fit: Fit = caption ? "blur" : loaded.length > 1 ? "pair" : chooseFit(first.w, first.h, modesRef.current, false);
+    const fit: Fit = cam ? "blur" : loaded.length > 1 ? "pair" : chooseFit(first.w, first.h, modesRef.current, false);
     const items: SlideItem[] = loaded.map((p) => ({ url: p.url, bg: fit === "blur" || fit === "pair" ? blurDataUrl(p.img) : null }));
     const key = ++counter.current;
     setView((s) => {
       const back = 1 - s.front;
       const layers = [...s.layers];
-      layers[back] = { key, fit, items, caption };
+      layers[back] = { key, fit, items, cam };
       return { layers, front: back };
     });
     if (push) historyRef.current = pushSlide(historyRef.current, urls);
@@ -163,10 +166,12 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
     const cams = frameWebcams(webcamsRef.current, { skipEurope: skipEuropeRef.current && isNightAfterSunset(sunRef.current, Date.now()) });
     for (let k = 0; k < cams.length; k++) {
       const cam = cams[camIdx.current++ % cams.length];
+      // teplota na místě kamery se načítá souběžně se snímkem, ať je v nadpisu hned
+      if (isValidPlace(cam.place)) void fetchPlaceWeather(cam.place);
       for (const url of webcamSnapshotUrls(cam, Date.now())) {
         const p = await Promise.race([loadPhoto(url), new Promise<null>((r) => window.setTimeout(() => r(null), WEBCAM_LOAD_TIMEOUT_MS))]);
         if (p && p.w >= WEBCAM_MIN_WIDTH) {
-          captions.current.set(url, cam.name);
+          captions.current.set(url, cam);
           return url;
         }
       }
@@ -297,12 +302,7 @@ export function PhotoFrame({ active, onWake, now }: { active: boolean; onWake: (
                 ) : (
                   <Panel item={l.items[0]} black={l.fit === "black"} motion={motion} />
                 )}
-                {l.caption && (
-                  <div className="pf-caption">
-                    <Icon name="camera" size={16} strokeWidth={1.8} />
-                    {l.caption}
-                  </div>
-                )}
+                {l.cam && <WebcamCaption cam={l.cam} />}
               </div>
             );
           })}

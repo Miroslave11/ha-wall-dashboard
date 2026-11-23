@@ -190,7 +190,8 @@
     "name": "Žaluzie"
   },
   "webcams": [
-    { "id": "snezka", "name": "Sněžka", "group": "Česko", "type": "image", "url": "https://example.cz/webcam/snezka.jpg", "refreshSec": 60, "source": "provozovatel kamery" },
+    { "id": "snezka", "name": "Sněžka", "group": "Česko", "type": "image", "url": "https://example.cz/webcam/snezka.jpg", "refreshSec": 60, "source": "provozovatel kamery",
+      "place": { "name": "Sněžka", "country": "Česko", "lat": 50.7361, "lon": 15.7398, "elevation": 1603 } },
     { "id": "etna", "name": "Etna", "group": "Itálie", "type": "youtube", "url": "https://www.youtube.com/watch?v=XXXXXXXXXXX", "inFrame": false },
     { "id": "fuji", "name": "Fuji", "group": "Asie", "type": "youtube", "url": "https://www.youtube.com/watch?v=XXXXXXXXXXX", "region": "other" }
   ],

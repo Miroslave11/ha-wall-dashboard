@@ -36,6 +36,13 @@ const ICONS = {
       <rect x="2" y="5.5" width="14" height="13" rx="2.5" />
     </>
   ),
+  /** Špendlík na mapě (místo webkamery). */
+  pin: (
+    <>
+      <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+      <circle cx="12" cy="9.5" r="2.5" />
+    </>
+  ),
   image: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="2.5" />

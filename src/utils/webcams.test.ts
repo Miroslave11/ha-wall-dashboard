@@ -85,6 +85,10 @@ describe("isNightAfterSunset", () => {
 });
 
 describe("validateWebcams", () => {
+  it("místo kamery: platné projde, neplatné souřadnice jsou chyba", () => {
+    expect(validateWebcams([img({ place: { name: "Sněžka", lat: 50.7, lon: 15.7, elevation: 1603 } })])).toEqual([]);
+    expect(validateWebcams([img({ place: { lat: 120, lon: 15 } })]).some((e) => e.includes("místo"))).toBe(true);
+  });
   it("platný seznam bez chyb", () => expect(validateWebcams([img(), yt(), img({ id: "r", url: "/photos/demo.jpg" })])).toEqual([]));
   it("najde chyby", () => {
     const errs = validateWebcams([img({ url: "ftp://x" }), img({ name: " " }), yt({ url: "blbost" }), img({ id: "q", refreshSec: 2 })]);

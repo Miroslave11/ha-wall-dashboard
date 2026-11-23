@@ -1,4 +1,5 @@
 import type { WebcamConfig } from "../config/types";
+import { isValidPlace } from "./placeWeather";
 
 /** Výchozí a nejkratší interval obnovy snímku webkamery (s). */
 export const WEBCAM_REFRESH_DEFAULT = 60;
@@ -111,6 +112,9 @@ export function validateWebcams(cams: WebcamConfig[] | undefined): string[] {
     if (c.type !== "image" && c.type !== "youtube") errors.push(`Webkamera ${label}: typ musí být "image" nebo "youtube"`);
     else if (c.type === "youtube" && !youtubeId(c.url ?? "")) errors.push(`Webkamera ${label}: nerozpoznal jsem ID videa na YouTube`);
     else if (c.type === "image" && !isWebcamUrl(c.url ?? "")) errors.push(`Webkamera ${label}: adresa snímku musí začínat http://, https:// nebo /`);
+    if (c.place !== undefined && !isValidPlace(c.place)) {
+      errors.push(`Webkamera ${label}: místo musí mít zeměpisnou šířku −90 až 90 a délku −180 až 180`);
+    }
     if (c.refreshSec !== undefined && !(typeof c.refreshSec === "number" && c.refreshSec >= WEBCAM_REFRESH_MIN)) {
       errors.push(`Webkamera ${label}: obnova musí být alespoň ${WEBCAM_REFRESH_MIN} s`);
     }

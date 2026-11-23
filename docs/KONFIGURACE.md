@@ -203,7 +203,8 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 
 ```json
 "webcams": [
-  { "id": "snezka", "name": "Sněžka", "group": "Česko", "type": "image", "url": "https://…/kamera.jpg", "refreshSec": 60, "source": "provozovatel" },
+  { "id": "snezka", "name": "Sněžka", "group": "Česko", "type": "image", "url": "https://…/kamera.jpg", "refreshSec": 60, "source": "provozovatel",
+    "place": { "name": "Sněžka", "country": "Česko", "lat": 50.7361, "lon": 15.7398, "elevation": 1603 } },
   { "id": "etna", "name": "Etna", "group": "Itálie", "type": "youtube", "url": "https://www.youtube.com/watch?v=…", "inFrame": false }
 ]
 ```
@@ -211,6 +212,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 - `type: "image"` – adresa snímku (JPEG), obnovuje se po `refreshSec` sekundách (výchozí 60, nejméně 10). K adrese se přidává parametr `_=<čas>`, aby prohlížeč nebral snímek z cache. Snímky se stahují přímo z tabletu (bez proxy), s hlavičkou `Referrer-Policy: no-referrer`; server kamery musí povolit zobrazení obrázku na cizí stránce.
 - `type: "youtube"` – živý přenos, `url` je ID videa (11 znaků) nebo odkaz (`watch?v=`, `youtu.be/`, `/live/`). V mřížce je náhled (`i.ytimg.com/vi/<id>/maxresdefault_live.jpg`, obnovuje se po dvou minutách), po klepnutí se spustí přehrávač (bez zvuku). Náhled živého přenosu není oficiálně zdokumentovaný; když chybí, dlaždice ukáže „Kamera je nedostupná“, ale přehrávač funguje.
 - `group` – skupina pro filtr nad mřížkou (Vše / Česko / …). `source` – kdo kameru provozuje, ukáže se na celé obrazovce. `inFrame: false` – kamera se nezařadí do fotorámečku. `region` – `"europe"` (výchozí) nebo `"other"` (kamera v jiném časovém pásmu, viz `webcamsSkipEuropeAtNight`).
+- `place` – kde kamera je (`lat`, `lon`, volitelně `elevation` v metrech, `name`, `country`). Ve fotorámečku se pak pod názvem kamery ukáže aktuální teplota, počasí, země a výška. Teplota je z [Open-Meteo](https://open-meteo.com) (bez klíče, model pro dané souřadnice a výšku, obnova po 15 minutách); tablet posílá jen souřadnice místa. Při výpadku internetu zůstane poslední hodnota nejvýš hodinu, pak jen název. V Nastavení → Webkamery se místo hledá podle názvu (ikona špendlíku u kamery) nebo zadá ručně.
 - Nic z toho se neukládá na NAS ani do HA mimo Nastavení → Webkamery (tam se kamery přidávají, řadí a odebírají a ukládají se jako ostatní nastavení). Při neúspěšném načtení zůstane poslední snímek s označením „nedostupná“.
 - Windy a podobné katalogy: snímky bezplatného Windy API mají odkazy s platností 10 minut a vyžadují odkaz na Windy, proto zatím nejsou podporované.
 
@@ -239,7 +241,7 @@ Na stránce lze mapu posouvat a přibližovat, smyčku zastavit tlačítkem a sn
 - `kenBurns` – pohyb fotek: `"on"` (výchozí) přiblížení a posun, `"subtle"` jemný, `"off"` žádný. Fotky zobrazené celé se hýbou nejvýš nepatrně (zvětšení 2,5 %), ať se okraje neořezávají.
 - `webcams` – prokládat fotky záběry z webkamer (`webcams`, kromě těch s `inFrame: false`); `webcamEvery` – jedna kamera po tolika fotkách (výchozí 4), kamery se střídají dokola. Snímek kamery se nikdy neořezává (rozostřené pozadí) a má v rohu její název. Nedostupná kamera (do 8 s se nenačte) se přeskočí. `webcamsSkipEuropeAtNight` – po západu slunce + 30 min (podle `header.sun`, do východu) se ve fotorámečku vynechají kamery z Evropy (`region` jiný než `"other"`), protože tam je tma; kamery s `region: "other"` zůstávají. Výchozí vypnuto, bez entity slunce se nic nevynechává. `webcamsOnly` – jen webkamery bez fotek (platí jen se zapnutým `webcams`); když žádná kamera neodpoví nebo jsou v noci všechny vynechané, ukážou se fotky. Přepíná se i přímo na rámečku (dvě ikony v pravém horním rohu: fotka = „Fotky + kamery“, kamera = „Jen kamery“; ukládá se do nastavení z aplikace). Nastavuje se i v Nastavení → Fotorámeček.
 - Všechny tři volby se nastavují i v Nastavení → Fotorámeček → Zobrazení fotek (přepíšou hodnoty ze souboru).
-- **Listování:** vlevo a vpravo jsou vysoké lišty se šipkou (88 × 360 px) pro předchozí a další snímek. Zpět se dá vrátit až o 40 zobrazených snímků (u dvojice se vrací celá dvojice). Po ručním listování se prezentace na 60 s zastaví, aby šlo fotku prohlédnout; pak pokračuje, od místa, kde se skončilo (po návratu zpět nejdřív znovu projde už zobrazené snímky).
+- **Listování:** vlevo a vpravo jsou šipky pro předchozí a další snímek; reaguje kolem nich neviditelná plocha 88 × 360 px. Zpět se dá vrátit až o 40 zobrazených snímků (u dvojice se vrací celá dvojice). Po ručním listování se prezentace na 60 s zastaví, aby šlo fotku prohlédnout; pak pokračuje, od místa, kde se skončilo (po návratu zpět nejdřív znovu projde už zobrazené snímky).
 
 - `source.type: "immich"` – album v Immichi podle názvu (rozlišuje se jen velikost písmen mimo češtinu, okolní mezery se ignorují; najde i alba sdílená s uživatelem klíče). Volitelně `imageSize` (`"preview"` výchozí, ~1440 px, nebo `"fullsize"`) a `baseUrl` (výchozí `"/immich"`). Fotky se berou jako náhledy JPEG, takže funguje i HEIC; videa se přeskakují. Seznam se obnovuje každou hodinu. Nastavení Immiche viz README (proměnné `IMMICH_URL`, `IMMICH_API_KEY`).
 - `source.type: "autoindex"` – výpis složky z nginx (Docker, volume `/photos`). Ve vývoji (`npm run dev`) autoindex není, použij `"list"`.

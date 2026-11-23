@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { UserSettings, WebcamConfig } from "../config/types";
 import { webcamGroups, youtubeId } from "../utils/webcams";
 import { Icon } from "./Icon";
+import { WebcamPlaceEditor } from "./WebcamPlaceEditor";
+import { isValidPlace } from "../utils/placeWeather";
 
 interface Props {
   draft: UserSettings;
@@ -23,6 +25,8 @@ export function SettingsWebcams({ draft, update }: Props) {
   const [query, setQuery] = useState("");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [newGroup, setNewGroup] = useState<string | null>(null);
+  /** Kamera, u které je otevřené nastavení místa. */
+  const [placeOpen, setPlaceOpen] = useState<string | null>(null);
   const q = norm(query.trim());
 
   const edit = (i: number, fn: (c: WebcamConfig) => void) =>
@@ -133,6 +137,7 @@ export function SettingsWebcams({ draft, update }: Props) {
               <span>Zdroj</span>
               <span>Rám.</span>
               <span title="Mimo Evropu: ve fotorámečku se nevynechá po západu slunce">Mimo EU</span>
+              <span title="Místo kamery: ve fotorámečku se ukáže aktuální teplota">Místo</span>
               <span />
             </div>
 
@@ -156,8 +161,10 @@ export function SettingsWebcams({ draft, update }: Props) {
                       const prevInGroup = members.findIndex((m) => m.i === i) > 0;
                       const nextInGroup = members.findIndex((m) => m.i === i) < members.length - 1;
                       const badYoutube = c.type === "youtube" && c.url.trim() !== "" && !youtubeId(c.url);
+                      const hasPlace = isValidPlace(c.place);
                       return (
-                        <div className="wc-row" key={c.id}>
+                        <Fragment key={c.id}>
+                        <div className="wc-row">
                           <input className="input" value={c.name} placeholder="např. Sněžka" aria-label="Název" onChange={(e) => edit(i, (x) => void (x.name = e.target.value))} />
                           <select
                             className="input"
@@ -228,6 +235,16 @@ export function SettingsWebcams({ draft, update }: Props) {
                               onChange={(e) => edit(i, (x) => void (x.region = e.target.checked ? "other" : undefined))}
                             />
                           </label>
+                          <button
+                            type="button"
+                            className={`icon-btn wc-place-btn${hasPlace ? " wc-place-btn--set" : ""}`}
+                            aria-label={hasPlace ? `Místo: ${c.place?.name ?? "nastaveno"}, upravit` : "Nastavit místo kamery (teplota ve fotorámečku)"}
+                            title={hasPlace ? (c.place?.name ?? "Místo nastaveno") : "Nastavit místo (teplota ve fotorámečku)"}
+                            aria-expanded={placeOpen === c.id}
+                            onClick={() => setPlaceOpen((o) => (o === c.id ? null : c.id))}
+                          >
+                            <Icon name="pin" size={18} />
+                          </button>
                           <div className="wc-actions">
                             <button type="button" className="icon-btn" aria-label="Posunout nahoru" disabled={!prevInGroup} onClick={() => move(i, -1)}>
                               <Icon name="chevronUp" size={20} />
@@ -240,6 +257,10 @@ export function SettingsWebcams({ draft, update }: Props) {
                             </button>
                           </div>
                         </div>
+                        {placeOpen === c.id && (
+                          <WebcamPlaceEditor camName={c.name} place={c.place} onChange={(pl) => edit(i, (x) => void (pl ? (x.place = pl) : delete x.place))} />
+                        )}
+                        </Fragment>
                       );
                     })}
 
