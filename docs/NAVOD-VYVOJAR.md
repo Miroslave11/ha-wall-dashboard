@@ -4,7 +4,7 @@ Jak aplikace funguje uvnitř, jak ji spustit, rozšířit a vydat. Ovládání z
 [NAVOD-UZIVATEL.md](NAVOD-UZIVATEL.md), všechny konfigurační klíče v [KONFIGURACE.md](KONFIGURACE.md),
 nasazení na NAS v [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md).
 
-> Návod odpovídá verzi **1.2.0**.
+> Návod odpovídá verzi **1.2.1**.
 
 ## Obsah
 

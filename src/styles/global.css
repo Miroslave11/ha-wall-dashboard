@@ -2169,8 +2169,8 @@ p.form-error {
   gap: 4px;
   padding: 4px;
   border-radius: 30px;
-  background: rgba(10, 14, 28, 0.38);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(10, 14, 28, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .pf-mode-btn {
@@ -2182,16 +2182,17 @@ p.form-error {
   border: 0;
   border-radius: 26px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.55);
   font: inherit;
   font-size: 16px;
   font-weight: 500;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Aktivní volba jen jemně zvýrazněná, ať neruší fotku */
 .pf-mode-btn--on {
-  background: rgba(255, 255, 255, 0.92);
-  color: #141a2a;
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .pf-mode-note {

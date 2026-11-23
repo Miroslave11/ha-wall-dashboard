@@ -4,7 +4,7 @@ Tento návod popisuje, jak dashboard ovládat na tabletu a jak ho nastavit. Inst
 [deploy/synology/NAVOD.md](../deploy/synology/NAVOD.md), technický popis pro programátory v
 [NAVOD-VYVOJAR.md](NAVOD-VYVOJAR.md).
 
-> Návod odpovídá verzi **1.2.0**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
+> Návod odpovídá verzi **1.2.1**. Nasazená verze je vidět na adrese `http://<IP-NASu>:8099/version.txt`.
 
 ## Obsah
 
